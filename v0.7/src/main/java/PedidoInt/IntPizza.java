@@ -1,11 +1,11 @@
 package PedidoInt;
 
-import InicioInt.homee;
+import InicioInt.home;
 import DB.Database;
-import java.awt.event.ActionEvent;
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
+import java.awt.event.*;
 import java.sql.*;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import javax.swing.*;
 
 public class IntPizza extends javax.swing.JFrame {
@@ -25,7 +25,7 @@ public class IntPizza extends javax.swing.JFrame {
         listaSabores();
         listaTamanhos();
         listaBebidas();
-        
+
         // Atalho para fechar
         JRootPane rootPane = this.getRootPane();
         rootPane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_E, InputEvent.ALT_DOWN_MASK), "closeProgram");
@@ -35,6 +35,9 @@ public class IntPizza extends javax.swing.JFrame {
                 dispose(); // Fecha o programa
             }
         });
+
+        inputHora.setText(pegaHora());
+        inputHora.setEditable(false);
     }
 
     /**
@@ -430,52 +433,57 @@ public class IntPizza extends javax.swing.JFrame {
     }
 
     public void enviarPedido() {
-    Connection conn = Database.getConnection();
+        Connection conn = Database.getConnection();
 
-    String tamanho = comboTamanho.getSelectedItem().toString();
-    String sabor = comboSabor.getSelectedItem().toString();
-    String bebida = comboBebida.getSelectedItem().toString();
+        String tamanho = comboTamanho.getSelectedItem().toString();
+        String sabor = comboSabor.getSelectedItem().toString();
+        String bebida = comboBebida.getSelectedItem().toString();
 
-    String nome_Cliente = inputNome.getText();
-    String endereco = inputRua.getText();
+        String nome_Cliente = inputNome.getText();
+        String endereco = inputRua.getText();
 
-    String bairro = inputBairro.getText();
-    int nCasa = Integer.parseInt(inputNumeroCasa.getText());
-    String horaP = inputHora.getText();
-    double precoFinal = precoTamanho + precoSabor + precoBebida;
+        String bairro = inputBairro.getText();
+        int nCasa = Integer.parseInt(inputNumeroCasa.getText());
+        String horaP = inputHora.getText();
+        double precoFinal = precoTamanho + precoSabor + precoBebida;
 
-    try {
-        // Query de inserção sem o `id_pedido` (auto-incremento)
-        String sql = "INSERT INTO `pedido`(`sabor`, `tamanho`, `bebida`, `nomeCliente`, `rua`, `bairro`, `numero`, `hora`, `precoFinal`) VALUES (?,?,?,?,?,?,?,?,?)";
-        PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+        try {
+            // Query de inserção sem o `id_pedido` (auto-incremento)
+            String sql = "INSERT INTO `pedido`(`sabor`, `tamanho`, `bebida`, `nomeCliente`, `rua`, `bairro`, `numero`, `hora`, `precoFinal`) VALUES (?,?,?,?,?,?,?,?,?)";
+            PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 
-        stmt.setString(1, sabor);
-        stmt.setString(2, tamanho);
-        stmt.setString(3, bebida);
-        stmt.setString(4, nome_Cliente);
-        stmt.setString(5, endereco);
-        stmt.setString(6, bairro);
-        stmt.setInt(7, nCasa);
-        stmt.setString(8, horaP);
-        stmt.setDouble(9, precoFinal);
+            stmt.setString(1, sabor);
+            stmt.setString(2, tamanho);
+            stmt.setString(3, bebida);
+            stmt.setString(4, nome_Cliente);
+            stmt.setString(5, endereco);
+            stmt.setString(6, bairro);
+            stmt.setInt(7, nCasa);
+            stmt.setString(8, horaP);
+            stmt.setDouble(9, precoFinal);
 
-        stmt.executeUpdate();
+            stmt.executeUpdate();
 
-        // Recupera o id gerado
-        ResultSet generatedKeys = stmt.getGeneratedKeys();
-        if (generatedKeys.next()) {
-            long idPedido = generatedKeys.getLong(1);  // Aqui você tem o id_pedido gerado
-            System.out.println("Pedido enviado com sucesso. ID do Pedido: " + idPedido);
+            // Recupera o id gerado
+            ResultSet generatedKeys = stmt.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                long idPedido = generatedKeys.getLong(1);  // Aqui você tem o id_pedido gerado
+                System.out.println("Pedido enviado com sucesso. ID do Pedido: " + idPedido);
+            }
+
+            // Atualiza a tabela com os pedidos
+            home h = new home();
+            h.listaPedidos();
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Erro ao enviar o pedido: " + ex.getMessage());
         }
-
-        // Atualiza a tabela com os pedidos
-        homee h = new homee();
-        h.listaPedidos();
-
-    } catch (SQLException ex) {
-        ex.printStackTrace();
-        JOptionPane.showMessageDialog(null, "Erro ao enviar o pedido: " + ex.getMessage());
     }
-}
 
+    private String pegaHora() {
+        LocalTime horaAtual = LocalTime.now();  // Obtém a hora atual
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");  // Define o formato da hora
+        return horaAtual.format(formatter);  // Retorna a hora formatada
+    }
 }
