@@ -1,2 +1,2 @@
 # Pitssada
-by Mathiack, ft Monari
+by Mathiack, ft Monari & Flarom
