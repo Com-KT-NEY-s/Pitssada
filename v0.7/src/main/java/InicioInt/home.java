@@ -24,7 +24,6 @@ public class home extends javax.swing.JFrame {
         Connection conn = Database.getConnection();
         if (conn == null) {
             JOptionPane.showMessageDialog(rootPane, "Ative o Apache e o MySQL");
-            
         }
         listaPedidos();
         setKeyboardShortcuts();
@@ -96,38 +95,54 @@ public class home extends javax.swing.JFrame {
                 dispose(); // Fecha o programa
             }
         });
+
+        //connPanel aqui chatgpt!
     }
 
     private void setStyles() {
-        // Define cores neutras em tons de cinza
-        Color backgroundColor = new Color(245, 245, 245); // Cinza claro para o fundo principal
-        Color panelBackgroundColor = new Color(230, 230, 230); // Cinza médio para os painéis
-        Color tableBackgroundColor = new Color(255, 255, 255); // Branco para a tabela
-        Color headerColor = new Color(200, 200, 200); // Cinza suave para o cabeçalho
+        // Define colors
+        Color backgroundColor = new Color(245, 245, 245); // Main background
+        Color panelBackgroundColor = new Color(230, 230, 230); // Panel background
+        Color tableBackgroundColor = new Color(255, 255, 255); // Table background
+        Color headerColor = new Color(200, 200, 200); // Header color
+        Color whiteBackground = new Color(255, 255, 255); // White background for connPanel
 
-        // Define fonte para títulos e conteúdo
+        // Font settings
         Font titleFont = new Font("SansSerif", Font.BOLD, 14);
         Font tableFont = new Font("SansSerif", Font.PLAIN, 12);
 
-        // Configura painel principal e borda
+        // Main panel setup
         this.getContentPane().setBackground(backgroundColor);
         jPanel1.setBackground(panelBackgroundColor);
         jPanel2.setBackground(panelBackgroundColor);
         jPanel1.setBorder(new EmptyBorder(10, 10, 10, 10));
 
-        // Configura a tabela
+        // Table settings
         JTpedidos.setFont(tableFont);
         JTpedidos.setBackground(tableBackgroundColor);
-        JTpedidos.setGridColor(new Color(210, 210, 210)); // Cinza claro para a grade da tabela
+        JTpedidos.setGridColor(new Color(210, 210, 210));
         JTpedidos.getTableHeader().setFont(titleFont);
         JTpedidos.getTableHeader().setBackground(headerColor);
         JTpedidos.getTableHeader().setForeground(Color.DARK_GRAY);
 
-        // Barra de menu estilizada
+        // Menu bar settings
         jMenuBar1.setBackground(headerColor);
         jMenuBar1.setBorderPainted(false);
         jMenu1.setFont(titleFont);
         jMenu3.setFont(titleFont);
+
+        // Set connPanel background to white
+        connPanel.setBackground(whiteBackground);
+        Connection conn = Database.getConnection();
+        if (conn == null) {
+            connPanel.setBackground(new Color(0xFF0000)); // Red background
+            msgPanel.setText("Você não está conectado ao servidor! Os recursos do sistema não funcionarão corretamente.");
+            msgPanel.setForeground(whiteBackground);
+        } else {
+            connPanel.setBackground(new Color(0x3399FF)); // Blue background
+            msgPanel.setText("A conexão com o banco está funcionando corretamente! Ao trabalho.");
+            msgPanel.setForeground(whiteBackground);
+        }
     }
 
     private void setKeyboardShortcuts() {
@@ -260,6 +275,8 @@ public class home extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         JTpedidos = new javax.swing.JTable();
+        connPanel = new javax.swing.JPanel();
+        msgPanel = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
@@ -279,17 +296,41 @@ public class home extends javax.swing.JFrame {
         JTpedidos.setModel(tabelaPedidos);
         jScrollPane1.setViewportView(JTpedidos);
 
+        connPanel.setBackground(new java.awt.Color(51, 153, 255));
+
+        msgPanel.setText("Bom dia (Como você chegou aqui?)");
+
+        javax.swing.GroupLayout connPanelLayout = new javax.swing.GroupLayout(connPanel);
+        connPanel.setLayout(connPanelLayout);
+        connPanelLayout.setHorizontalGroup(
+            connPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(connPanelLayout.createSequentialGroup()
+                .addGap(17, 17, 17)
+                .addComponent(msgPanel)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        connPanelLayout.setVerticalGroup(
+            connPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(connPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(msgPanel)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 700, Short.MAX_VALUE)
+            .addComponent(connPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 549, Short.MAX_VALUE))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 579, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(connPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
@@ -366,7 +407,7 @@ public class home extends javax.swing.JFrame {
     private void fazPActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fazPActionPerformed
         IntPizza j = new IntPizza(this);
         j.Show();
-        
+
         listaPedidos();
     }//GEN-LAST:event_fazPActionPerformed
 
@@ -422,11 +463,11 @@ public class home extends javax.swing.JFrame {
 //        //</editor-fold>
 //        //</editor-fold>
 
-         try{
-             UIManager.setLookAndFeel(new FlatLightLaf());
-         } catch(Exception e ) {
-             e.printStackTrace();
-         }
+        try {
+            UIManager.setLookAndFeel(new FlatLightLaf());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
@@ -438,6 +479,7 @@ public class home extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTable JTpedidos;
+    private javax.swing.JPanel connPanel;
     private javax.swing.JMenuItem fazP;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
@@ -450,6 +492,7 @@ public class home extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JMenuItem menuSabor;
     private javax.swing.JMenuItem menuTamanho;
+    private javax.swing.JLabel msgPanel;
     private javax.swing.JMenuItem verCardapio;
     // End of variables declaration//GEN-END:variables
 }
