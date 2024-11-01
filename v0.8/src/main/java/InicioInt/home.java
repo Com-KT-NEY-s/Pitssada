@@ -101,6 +101,8 @@ public class home extends javax.swing.JFrame {
 
         initSearchField();
         setSearchShortcut();
+        
+        JOptionPane.showMessageDialog(rootPane, connPanel.getLocation());
     }
 
     private void setStyles() {
@@ -118,7 +120,6 @@ public class home extends javax.swing.JFrame {
         // Main panel setup
         this.getContentPane().setBackground(backgroundColor);
         jPanel1.setBackground(panelBackgroundColor);
-        jPanel2.setBackground(panelBackgroundColor);
         jPanel1.setBorder(new EmptyBorder(10, 10, 10, 10));
 
         // Table settings
@@ -139,14 +140,15 @@ public class home extends javax.swing.JFrame {
         connPanel.setBackground(whiteBackground);
         Connection conn = Database.getConnection();
         if (conn == null) {
-            connPanel.setBackground(new Color(0xFF0000)); // Red background
+            connPanel.setBackground(Color.red); // Red background
             msgPanel.setText("Você não está conectado ao servidor! Os recursos do sistema não funcionarão corretamente.");
             msgPanel.setForeground(whiteBackground);
         } else {
-            connPanel.setBackground(new Color(0x3399FF)); // Blue background
+            connPanel.setBackground(Color.blue); // Blue background
             msgPanel.setText("A conexão com o banco está funcionando corretamente! Ao trabalho.");
             msgPanel.setForeground(whiteBackground);
         }
+        jPanel1.add(connPanel);
     }
 
     private void setKeyboardShortcuts() {
@@ -385,7 +387,6 @@ public class home extends javax.swing.JFrame {
         JTpedidos = new javax.swing.JTable();
         connPanel = new javax.swing.JPanel();
         msgPanel = new javax.swing.JLabel();
-        jPanel2 = new javax.swing.JPanel();
         jMenuBar1 = new javax.swing.JMenuBar();
         acoes = new javax.swing.JMenu();
         fazP = new javax.swing.JMenuItem();
@@ -411,7 +412,8 @@ public class home extends javax.swing.JFrame {
         JTpedidos.setModel(tabelaPedidos);
         jScrollPane1.setViewportView(JTpedidos);
 
-        connPanel.setBackground(new java.awt.Color(221, 221, 221));
+        connPanel.setBackground(new java.awt.Color(255, 255, 255));
+        connPanel.setPreferredSize(new java.awt.Dimension(150, 300));
 
         msgPanel.setText("Bom dia (Como você chegou aqui?)");
 
@@ -420,7 +422,7 @@ public class home extends javax.swing.JFrame {
         connPanelLayout.setHorizontalGroup(
             connPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(connPanelLayout.createSequentialGroup()
-                .addGap(17, 17, 17)
+                .addContainerGap()
                 .addComponent(msgPanel)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -428,43 +430,30 @@ public class home extends javax.swing.JFrame {
             connPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(connPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(msgPanel)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(msgPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 22, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 700, Short.MAX_VALUE)
-            .addComponent(connPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 712, Short.MAX_VALUE)
+                    .addComponent(connPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 712, Short.MAX_VALUE))
+                .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 567, Short.MAX_VALUE)
-                .addGap(18, 18, 18)
-                .addComponent(connPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 296, Short.MAX_VALUE)
+                .addGap(219, 219, 219)
+                .addComponent(connPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(27, 27, 27))
         );
-
-        getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
-
-        jPanel2.setBackground(new java.awt.Color(255, 255, 255));
-
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 700, Short.MAX_VALUE)
-        );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
-        );
-
-        getContentPane().add(jPanel2, java.awt.BorderLayout.PAGE_START);
 
         acoes.setText("Ações");
 
@@ -515,6 +504,23 @@ public class home extends javax.swing.JFrame {
         jMenuBar1.add(cardapio);
 
         setJMenuBar(jMenuBar1);
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
+        );
 
         pack();
         setLocationRelativeTo(null);
@@ -607,7 +613,6 @@ public class home extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JMenuItem menuSabor;
     private javax.swing.JMenuItem menuTamanho;
