@@ -147,8 +147,8 @@
               <Group type="102" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="jScrollPane1" alignment="0" pref="712" max="32767" attributes="0"/>
-                      <Component id="connPanel" alignment="0" pref="712" max="32767" attributes="0"/>
+                      <Component id="jScrollPane1" pref="712" max="32767" attributes="0"/>
+                      <Component id="connPanel" alignment="1" pref="712" max="32767" attributes="0"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
@@ -159,9 +159,8 @@
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace min="-2" max="-2" attributes="0"/>
                   <Component id="jScrollPane1" pref="296" max="32767" attributes="0"/>
-                  <EmptySpace min="-2" pref="219" max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="246" max="-2" attributes="0"/>
                   <Component id="connPanel" min="-2" pref="34" max="-2" attributes="0"/>
-                  <EmptySpace min="-2" pref="27" max="-2" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>

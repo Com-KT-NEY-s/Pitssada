@@ -21,7 +21,7 @@ public class home extends javax.swing.JFrame {
     private TableRowSorter<DefaultTableModel> sorter;
 
     public home() {
-        //super("Início");
+        super("Início");
         initComponents();
         setStyles();
         Connection conn = Database.getConnection();
@@ -442,7 +442,7 @@ public class home extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 712, Short.MAX_VALUE)
-                    .addComponent(connPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 712, Short.MAX_VALUE))
+                    .addComponent(connPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 712, Short.MAX_VALUE))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -450,9 +450,8 @@ public class home extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 296, Short.MAX_VALUE)
-                .addGap(219, 219, 219)
-                .addComponent(connPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(27, 27, 27))
+                .addGap(246, 246, 246)
+                .addComponent(connPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         acoes.setText("Ações");
@@ -529,7 +528,6 @@ public class home extends javax.swing.JFrame {
     private void fazPActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fazPActionPerformed
         IntPizza j = new IntPizza(this);
         j.Show();
-
         listaPedidos();
     }//GEN-LAST:event_fazPActionPerformed
 
