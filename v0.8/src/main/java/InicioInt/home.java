@@ -16,6 +16,9 @@ public class home extends javax.swing.JFrame {
 
     private static DefaultTableModel tableModel;
     private DefaultTableModel tabelaPedidos = new DefaultTableModel(new Object[]{"ID", "Sabor", "Tamanho", "Bebida", "Cliente", "Rua", "Bairro", "Nº", "Hora", "Preço"}, 0);
+    private JPanel searchPanel;
+    private JTextField searchField;
+    private TableRowSorter<DefaultTableModel> sorter;
 
     public home() {
         //super("Início");
@@ -88,15 +91,16 @@ public class home extends javax.swing.JFrame {
 
         // Atalho para fechar
         JRootPane rootPane = this.getRootPane();
-        rootPane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_E, InputEvent.ALT_DOWN_MASK), "closeProgram");
-        rootPane.getActionMap().put("closeProgram", new AbstractAction() {
+        rootPane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_E, InputEvent.ALT_DOWN_MASK), "fechar");
+        rootPane.getActionMap().put("fechar", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 dispose(); // Fecha o programa
             }
         });
 
-        //connPanel aqui chatgpt!
+        initSearchField();
+        setSearchShortcut();
     }
 
     private void setStyles() {
@@ -128,8 +132,8 @@ public class home extends javax.swing.JFrame {
         // Menu bar settings
         jMenuBar1.setBackground(headerColor);
         jMenuBar1.setBorderPainted(false);
-        jMenu1.setFont(titleFont);
-        jMenu3.setFont(titleFont);
+        acoes.setFont(titleFont);
+        cardapio.setFont(titleFont);
 
         // Set connPanel background to white
         connPanel.setBackground(whiteBackground);
@@ -261,6 +265,107 @@ public class home extends javax.swing.JFrame {
         }
     }
 
+    private void setSearchShortcut() {
+        JRootPane rootPane = this.getRootPane();
+
+        // Atalho Ctrl + F para mostrar o painel de busca
+        KeyStroke openKeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_F, InputEvent.CTRL_DOWN_MASK);
+        rootPane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(openKeyStroke, "showSearch");
+        rootPane.getActionMap().put("showSearch", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                toggleSearchPanel(true);
+            }
+        });
+
+        // Atalho Alt + E para esconder o painel de busca
+        KeyStroke closeKeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_E, InputEvent.ALT_DOWN_MASK);
+        rootPane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(closeKeyStroke, "hideSearch");
+        rootPane.getActionMap().put("hideSearch", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                toggleSearchPanel(false);
+            }
+        });
+    }
+
+    private void initSearchField() {
+        // Painel principal que vai conter a busca e a tabela
+        JPanel mainPanel = new JPanel(null);
+        mainPanel.setLayout(null); // Para controle manual do layout
+
+        // Configuração do painel de busca com posição e tamanho fixos
+        searchPanel = new JPanel(null);
+        searchPanel.setBounds(10, 10, 600, 30); // Ajuste do tamanho do painel de busca
+        searchField = new JTextField();
+        searchField.setBounds(70, 5, 400, 20);  // Campo de busca no painel
+        JButton closeButton = new JButton("X");
+        closeButton.setBounds(480, 5, 50, 20);  // Botão de fechar no painel
+
+        // Adiciona os componentes ao painel de busca
+        JLabel labelBuscar = new JLabel("Buscar:");
+        labelBuscar.setBounds(10, 5, 50, 20); // Texto de busca
+        searchPanel.add(labelBuscar);
+        searchPanel.add(searchField);
+        searchPanel.add(closeButton);
+
+        // Adiciona o painel de busca ao painel principal
+        mainPanel.add(searchPanel);
+
+        // Configuração da tabela com rolagem
+        JTpedidos.setModel(tabelaPedidos);  // Garante que JTpedidos use o modelo correto
+        sorter = new TableRowSorter<>(tabelaPedidos); // Inicializa o sorter
+        JTpedidos.setRowSorter(sorter); // Associa o sorter à tabela
+
+        JScrollPane scrollPane = new JScrollPane(JTpedidos); // Tabela dentro de JScrollPane
+        scrollPane.setBounds(10, 50, 600, 400); // Ajuste da posição e tamanho da tabela
+        mainPanel.add(scrollPane); // Adiciona ao painel principal
+
+        // Configuração da janela principal
+        setContentPane(mainPanel); // Define o mainPanel como o conteúdo principal
+        setSize(640, 500); // Define o tamanho da janela
+
+        // Configurações do botão fechar
+        closeButton.addActionListener(e -> searchPanel.setVisible(false));
+
+        // Listener para busca em tempo real
+        searchField.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                filterTable();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                filterTable();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                filterTable();
+            }
+        });
+    }
+
+    private void filterTable() {
+        String query = searchField.getText().toLowerCase().trim();
+
+        if (query.isEmpty()) {
+            sorter.setRowFilter(null); // Mostra tudo se o campo estiver vazio
+        } else {
+            sorter.setRowFilter(RowFilter.regexFilter("(?i)" + query)); // Filtro de busca
+        }
+    }
+
+    private void toggleSearchPanel(boolean visible) {
+        searchPanel.setVisible(visible);
+        searchPanel.revalidate();
+        searchPanel.repaint();
+        if (visible) {
+            searchField.requestFocusInWindow();  // Foco no campo de busca
+        }
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -272,6 +377,9 @@ public class home extends javax.swing.JFrame {
 
         jMenu2 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
+        jMenuItem3 = new javax.swing.JMenuItem();
+        jMenu4 = new javax.swing.JMenu();
+        jMenu1 = new javax.swing.JMenu();
         jPanel1 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         JTpedidos = new javax.swing.JTable();
@@ -279,9 +387,9 @@ public class home extends javax.swing.JFrame {
         msgPanel = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         jMenuBar1 = new javax.swing.JMenuBar();
-        jMenu1 = new javax.swing.JMenu();
+        acoes = new javax.swing.JMenu();
         fazP = new javax.swing.JMenuItem();
-        jMenu3 = new javax.swing.JMenu();
+        cardapio = new javax.swing.JMenu();
         verCardapio = new javax.swing.JMenuItem();
         menuTamanho = new javax.swing.JMenuItem();
         menuSabor = new javax.swing.JMenuItem();
@@ -291,8 +399,15 @@ public class home extends javax.swing.JFrame {
 
         jMenuItem1.setText("jMenuItem1");
 
+        jMenuItem3.setText("jMenuItem3");
+
+        jMenu4.setText("jMenu4");
+
+        jMenu1.setText("jMenu1");
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
+        JTpedidos.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
         JTpedidos.setModel(tabelaPedidos);
         jScrollPane1.setViewportView(JTpedidos);
 
@@ -350,7 +465,7 @@ public class home extends javax.swing.JFrame {
 
         getContentPane().add(jPanel2, java.awt.BorderLayout.PAGE_START);
 
-        jMenu1.setText("Ações");
+        acoes.setText("Ações");
 
         fazP.setText("Fazer Pedido");
         fazP.addActionListener(new java.awt.event.ActionListener() {
@@ -358,11 +473,11 @@ public class home extends javax.swing.JFrame {
                 fazPActionPerformed(evt);
             }
         });
-        jMenu1.add(fazP);
+        acoes.add(fazP);
 
-        jMenuBar1.add(jMenu1);
+        jMenuBar1.add(acoes);
 
-        jMenu3.setText("Cardápio");
+        cardapio.setText("Cardápio");
 
         verCardapio.setText("Ver Cardápio");
         verCardapio.addActionListener(new java.awt.event.ActionListener() {
@@ -370,7 +485,7 @@ public class home extends javax.swing.JFrame {
                 verCardapioActionPerformed(evt);
             }
         });
-        jMenu3.add(verCardapio);
+        cardapio.add(verCardapio);
 
         menuTamanho.setText("Novo Tamanho");
         menuTamanho.addActionListener(new java.awt.event.ActionListener() {
@@ -378,7 +493,7 @@ public class home extends javax.swing.JFrame {
                 menuTamanhoActionPerformed(evt);
             }
         });
-        jMenu3.add(menuTamanho);
+        cardapio.add(menuTamanho);
 
         menuSabor.setText("Novo Sabor");
         menuSabor.addActionListener(new java.awt.event.ActionListener() {
@@ -386,7 +501,7 @@ public class home extends javax.swing.JFrame {
                 menuSaborActionPerformed(evt);
             }
         });
-        jMenu3.add(menuSabor);
+        cardapio.add(menuSabor);
 
         jMenuItem2.setText("Nova Bebida");
         jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
@@ -394,9 +509,9 @@ public class home extends javax.swing.JFrame {
                 jMenuItem2ActionPerformed(evt);
             }
         });
-        jMenu3.add(jMenuItem2);
+        cardapio.add(jMenuItem2);
 
-        jMenuBar1.add(jMenu3);
+        jMenuBar1.add(cardapio);
 
         setJMenuBar(jMenuBar1);
 
@@ -479,14 +594,17 @@ public class home extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTable JTpedidos;
+    private javax.swing.JMenu acoes;
+    private javax.swing.JMenu cardapio;
     private javax.swing.JPanel connPanel;
     private javax.swing.JMenuItem fazP;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
-    private javax.swing.JMenu jMenu3;
+    private javax.swing.JMenu jMenu4;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
+    private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;

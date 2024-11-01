@@ -21,6 +21,7 @@ CardapioInt\JCardapio$2.class
 CardapioInt\addBebida$5.class
 CardapioInt\JCardapio$9.class
 InicioInt\home$8.class
+InicioInt\home$13.class
 CardapioInt\JCardapio$8$1.class
 CardapioInt\addBebida$2.class
 PedidoInt\IntPizza$2.class
@@ -31,6 +32,7 @@ CardapioInt\JCardapio$5.class
 CardapioInt\addTamanho$3.class
 CardapioInt\addBebida$4.class
 CardapioInt\JCardapio.class
+InicioInt\home$15.class
 InicioInt\home$4.class
 PedidoInt\IntPizza$1.class
 InicioInt\home$7.class
@@ -43,6 +45,7 @@ CardapioInt\addSabor.class
 PedidoInt\IntPizza$3.class
 PedidoInt\Pitzzaria.class
 CardapioInt\addSabor$5.class
+InicioInt\home$14.class
 InicioInt\home.class
 CardapioInt\addBebida.class
 CardapioInt\JCardapio$1.class
