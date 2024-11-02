@@ -23,6 +23,7 @@ public class home extends javax.swing.JFrame {
     public home() {
         super("Início");
         initComponents();
+        setLocationRelativeTo(null);
         setStyles();
         Connection conn = Database.getConnection();
         if (conn == null) {
@@ -100,7 +101,6 @@ public class home extends javax.swing.JFrame {
         });
 
         initSearchField();
-        setSearchShortcut();
     }
 
     private void setStyles() {
@@ -190,7 +190,6 @@ public class home extends javax.swing.JFrame {
         }
     }
 
-    // EXCLUI DA TABELA E DELETE NO BANCO
     private static void excluirPelaTabelaP(int id) {
         try (Connection conn = Database.getConnection()) {  // Obtém conexão com o banco
             String query = "DELETE FROM pedido WHERE id_pedido = ?";  // SQL com placeholders
@@ -235,7 +234,6 @@ public class home extends javax.swing.JFrame {
 
         } catch (Exception e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Erro ao listar pedidos: " + e.getMessage());
         } finally {
             try {
                 if (rs != null) {
@@ -253,30 +251,6 @@ public class home extends javax.swing.JFrame {
         }
     }
 
-    private void setSearchShortcut() {
-        JRootPane rootPane = this.getRootPane();
-
-        // Atalho Ctrl + F para mostrar o painel de busca
-        KeyStroke openKeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_F, InputEvent.CTRL_DOWN_MASK);
-        rootPane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(openKeyStroke, "showSearch");
-        rootPane.getActionMap().put("showSearch", new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                toggleSearchPanel(true);
-            }
-        });
-
-        // Atalho Alt + E para esconder o painel de busca
-        KeyStroke closeKeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_E, InputEvent.ALT_DOWN_MASK);
-        rootPane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(closeKeyStroke, "hideSearch");
-        rootPane.getActionMap().put("hideSearch", new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                toggleSearchPanel(false);
-            }
-        });
-    }
-
     private void initSearchField() {
         // Painel principal que vai conter a busca, tabela e o connPanel
         JPanel mainPanel = new JPanel(null);
@@ -287,15 +261,12 @@ public class home extends javax.swing.JFrame {
         searchPanel.setBounds(10, 10, 600, 30); // Ajuste do tamanho do painel de busca
         searchField = new JTextField();
         searchField.setBounds(70, 5, 400, 20);  // Campo de busca no painel
-        JButton closeButton = new JButton("X");
-        closeButton.setBounds(480, 5, 50, 20);  // Botão de fechar no painel
 
         // Adiciona os componentes ao painel de busca
         JLabel labelBuscar = new JLabel("Buscar:");
         labelBuscar.setBounds(10, 5, 50, 20); // Texto de busca
         searchPanel.add(labelBuscar);
         searchPanel.add(searchField);
-        searchPanel.add(closeButton);
 
         // Adiciona o painel de busca ao painel principal
         mainPanel.add(searchPanel);
@@ -311,14 +282,14 @@ public class home extends javax.swing.JFrame {
 
         // Configuração do painel de conexão (connPanel)
         Color whiteBackground = new Color(255, 255, 255);
-        Color ligthBlue = new Color(0,153,255);
-        Color red = new Color(255, 255, 255);// White background for connPanel
+        Color ligthBlue = new Color(0, 153, 255);
+        Color red = new Color(255, 0, 0);// White background for connPanel
         connPanel.setBounds(10, 460, 600, 30);  // Define o tamanho e posição do connPanel
         Connection conn = Database.getConnection();
         if (conn == null) {
             connPanel.setBackground(red); // Red background
             msgPanel.setText("Você não está conectado ao servidor! Os recursos do sistema não funcionarão corretamente.");
-            msgPanel.setForeground(whiteBackground);
+            msgPanel.setForeground(Color.white);
         } else {
             connPanel.setBackground(ligthBlue);// Blue background
             msgPanel.setText("A conexão com o banco está funcionando corretamente! Ao trabalho.");
@@ -326,13 +297,9 @@ public class home extends javax.swing.JFrame {
         }
         mainPanel.add(connPanel); // Adiciona connPanel ao painel principal
 
-        
         // Configuração da janela principal
         setContentPane(mainPanel); // Define o mainPanel como o conteúdo principal
         setSize(640, 540); // Ajusta o tamanho da janela para acomodar todos os componentes
-
-        // Configurações do botão fechar
-        closeButton.addActionListener(e -> searchPanel.setVisible(false));
 
         // Listener para busca em tempo real
         searchField.getDocument().addDocumentListener(new DocumentListener() {
@@ -387,10 +354,10 @@ public class home extends javax.swing.JFrame {
         jMenu4 = new javax.swing.JMenu();
         jMenu1 = new javax.swing.JMenu();
         jPanel1 = new javax.swing.JPanel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        JTpedidos = new javax.swing.JTable();
         connPanel = new javax.swing.JPanel();
         msgPanel = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        JTpedidos = new javax.swing.JTable();
         jMenuBar1 = new javax.swing.JMenuBar();
         acoes = new javax.swing.JMenu();
         fazP = new javax.swing.JMenuItem();
@@ -412,10 +379,6 @@ public class home extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-
-        JTpedidos.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        JTpedidos.setModel(tabelaPedidos);
-        jScrollPane1.setViewportView(JTpedidos);
 
         connPanel.setBackground(new java.awt.Color(255, 255, 255));
         connPanel.setPreferredSize(new java.awt.Dimension(150, 300));
@@ -444,21 +407,19 @@ public class home extends javax.swing.JFrame {
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 692, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(14, 14, 14))
-            .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(connPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 766, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(19, 19, 19)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 296, Short.MAX_VALUE)
-                .addGap(233, 233, 233)
+                .addContainerGap(12, Short.MAX_VALUE)
                 .addComponent(connPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
+
+        JTpedidos.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        JTpedidos.setModel(tabelaPedidos);
+        jScrollPane1.setViewportView(JTpedidos);
 
         acoes.setText("Ações");
 
@@ -518,11 +479,17 @@ public class home extends javax.swing.JFrame {
                 .addGap(0, 7, Short.MAX_VALUE)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 7, Short.MAX_VALUE))
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane1)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 530, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
