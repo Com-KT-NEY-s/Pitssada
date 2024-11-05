@@ -5,8 +5,10 @@ import java.awt.*;
 import javax.swing.*;
 import CardapioInt.*;
 import DB.Database;
+import static DB.Database.getConnection;
 import com.formdev.flatlaf.FlatLightLaf;
 import java.awt.event.*;
+import java.net.ConnectException;
 import java.sql.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.*;
@@ -19,16 +21,14 @@ public class home extends javax.swing.JFrame {
     private JPanel searchPanel;
     private JTextField searchField;
     private TableRowSorter<DefaultTableModel> sorter;
+    private Connection connection = null;
 
     public home() {
         super("Início");
         initComponents();
         setLocationRelativeTo(null);
         setStyles();
-        Connection conn = Database.getConnection();
-        if (conn == null) {
-            JOptionPane.showMessageDialog(rootPane, "Ative o Apache e o MySQL");
-        }
+        connectionUpdate.start();
         listaPedidos();
         setKeyboardShortcuts();
 
@@ -103,23 +103,54 @@ public class home extends javax.swing.JFrame {
         initSearchField();
     }
 
-    private void setStyles() {
-        // Define colors
-        Color backgroundColor = new Color(245, 245, 245); // Main background
-        Color panelBackgroundColor = new Color(230, 230, 230); // Panel background
-        Color tableBackgroundColor = new Color(255, 255, 255); // Table background
-        Color headerColor = new Color(200, 200, 200); // Header color
+    private Timer connectionUpdate = new Timer(1000, new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            checkDatabaseConnection();
+        }
+    });
 
-        // Font settings
+    private void checkDatabaseConnection() {
+        try {
+            connection = getConnection();
+            updateConnectionStatusPanel(connection != null && !connection.isClosed()); // Atualiza painel de status
+            connection.close();
+            connection = null;
+        } catch (SQLException | NullPointerException  ex) {
+            updateConnectionStatusPanel(false);
+        }
+    }
+
+    private void updateConnectionStatusPanel(boolean isConnected) {
+        Color white = new Color(255, 255, 255);
+        Color lightBlue = new Color(0, 153, 255);
+        Color red = new Color(255, 0, 0);
+
+        //System.out.println(isConnected);
+        if (isConnected) {
+            connPanel.setBackground(lightBlue);
+            msgPanel.setText("A conexão com o banco está funcionando corretamente! Ao trabalho.");
+            msgPanel.setForeground(white);
+        } else {
+            connPanel.setBackground(red);
+            msgPanel.setText("Você não está conectado ao servidor! Os recursos do sistema não funcionarão corretamente.");
+            msgPanel.setForeground(white);
+        }
+    }
+
+    private void setStyles() {
+        Color backgroundColor = new Color(245, 245, 245);
+        Color panelBackgroundColor = new Color(230, 230, 230);
+        Color tableBackgroundColor = new Color(255, 255, 255);
+        Color headerColor = new Color(200, 200, 200);
+
         Font titleFont = new Font("SansSerif", Font.BOLD, 14);
         Font tableFont = new Font("SansSerif", Font.PLAIN, 12);
 
-        // Main panel setup
         this.getContentPane().setBackground(backgroundColor);
         jPanel1.setBackground(panelBackgroundColor);
         jPanel1.setBorder(new EmptyBorder(10, 10, 10, 10));
 
-        // Table settings
         JTpedidos.setFont(tableFont);
         JTpedidos.setBackground(tableBackgroundColor);
         JTpedidos.setGridColor(new Color(210, 210, 210));
@@ -127,13 +158,11 @@ public class home extends javax.swing.JFrame {
         JTpedidos.getTableHeader().setBackground(headerColor);
         JTpedidos.getTableHeader().setForeground(Color.DARK_GRAY);
 
-        // Menu bar settings
         jMenuBar1.setBackground(headerColor);
         jMenuBar1.setBorderPainted(false);
         acoes.setFont(titleFont);
         cardapio.setFont(titleFont);
 
-        // Set connPanel background to white
         jPanel1.add(connPanel);
     }
 

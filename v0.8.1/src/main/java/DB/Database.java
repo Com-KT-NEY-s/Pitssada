@@ -14,7 +14,7 @@ public class Database {
                 "root", ""
             );  
         } catch(SQLException ex) {
-            Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
+            //Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
     }
