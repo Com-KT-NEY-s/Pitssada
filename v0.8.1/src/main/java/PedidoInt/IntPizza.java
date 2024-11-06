@@ -36,7 +36,6 @@ public class IntPizza extends javax.swing.JDialog {
             }
         });
     }
-
     
     public void Show(){
         this.setVisible(true);
