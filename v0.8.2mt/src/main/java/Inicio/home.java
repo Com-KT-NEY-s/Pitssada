@@ -12,6 +12,7 @@ import static DB.Database.getConnection;
 import com.formdev.flatlaf.FlatLightLaf;
 import java.awt.event.*;
 import java.sql.*;
+import java.util.concurrent.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.*;
 import javax.swing.table.*;
@@ -23,13 +24,13 @@ public class home extends javax.swing.JFrame {
     private JTextField searchField;
     private TableRowSorter<DefaultTableModel> sorter;
     private Connection connection = null;
+    private ScheduledExecutorService connectionChecker;  // ExecutorService para a tarefa de verificação
 
     public home() {
         super("Início");
         initComponents();
         setLocationRelativeTo(null);
         setStyles();
-        connectionUpdate.start();
         listaPedidos();
         setKeyboardShortcuts();
 
@@ -48,76 +49,35 @@ public class home extends javax.swing.JFrame {
         jMenuItem2.setText("Nova Bebida");
         jMenuItem2.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_B, InputEvent.ALT_DOWN_MASK));
 
-        // Atualiza diretamente pela tabela
-        tabelaPedidos.addTableModelListener(new TableModelListener() {
-            @Override
-            public void tableChanged(TableModelEvent e) {
-                if (e.getType() == TableModelEvent.UPDATE) {
-                    int row = e.getFirstRow();
-                    int id = Integer.parseInt(tabelaPedidos.getValueAt(row, 0).toString());  // ID do pedido
-                    String sabor = (String) tabelaPedidos.getValueAt(row, 1);
-                    String tamanho = (String) tabelaPedidos.getValueAt(row, 2);
-                    String bebida = (String) tabelaPedidos.getValueAt(row, 3);
-                    String cliente = (String) tabelaPedidos.getValueAt(row, 4);
-                    String rua = (String) tabelaPedidos.getValueAt(row, 5);
-                    String bairro = (String) tabelaPedidos.getValueAt(row, 6);
-                    int numero = Integer.parseInt(tabelaPedidos.getValueAt(row, 7).toString());
-                    String hora = (String) tabelaPedidos.getValueAt(row, 8);
-                    double preco = Double.parseDouble(tabelaPedidos.getValueAt(row, 9).toString());
-
-                    atualizarPelaTabelaP(id, sabor, tamanho, bebida, cliente, rua, bairro, numero, hora, preco);  // Atualiza no banco
-                }
-            }
-        });
-
-        // Exclui linhas selecionadas
-        JTpedidos.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_DELETE) {
-                    int selectedRow = JTpedidos.getSelectedRow(); // Obtém a linha selecionada
-                    if (selectedRow != -1) {
-                        int id = Integer.parseInt(JTpedidos.getValueAt(selectedRow, 0).toString());  // Obtém o ID do pedido
-                        excluirPelaTabelaP(id);  // Exclui do banco de dados
-
-                        DefaultTableModel model = (DefaultTableModel) JTpedidos.getModel();
-                        model.removeRow(selectedRow);  // Remove a linha da tabela
-
-                        JOptionPane.showMessageDialog(null, "Item excluído com sucesso.");
-                    } else {
-                        JOptionPane.showMessageDialog(null, "Selecione uma linha para excluir.");
-                    }
-                }
-            }
-        });
-
-        // Atalho para fechar
-        JRootPane rootPane = this.getRootPane();
-        rootPane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_E, InputEvent.ALT_DOWN_MASK), "fechar");
-        rootPane.getActionMap().put("fechar", new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dispose(); // Fecha o programa
-            }
-        });
+        // Inicializa o ExecutorService para a verificação de conexão com o banco
+        startDatabaseConnectionChecker();
 
         initSearchField();
     }
-    
-    private Timer connectionUpdate = new Timer(1000, new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            checkDatabaseConnection();
-        }
-    });
+
+    // Inicia o ScheduledExecutorService para checar a conexão do banco em background
+    private void startDatabaseConnectionChecker() {
+        connectionChecker = Executors.newScheduledThreadPool(1);
+        connectionChecker.scheduleAtFixedRate(() -> {
+            Thread.currentThread().setName("Timer");
+            try {
+                checkDatabaseConnection();
+            } catch (Exception ex) {
+                System.err.println("Erro na verificação de conexão: " + ex.getMessage());
+                ex.printStackTrace();
+            }
+        }, 0, 1, TimeUnit.SECONDS);
+    }
 
     private void checkDatabaseConnection() {
         try {
             connection = getConnection();
-            updateConnectionStatusPanel(connection != null && !connection.isClosed()); // Atualiza painel de status
-            connection.close();
-            connection = null;
-        } catch (SQLException | NullPointerException  ex) {
+            updateConnectionStatusPanel(connection != null && !connection.isClosed());
+            if (connection != null) {
+                connection.close();
+            }
+        } catch (SQLException | NullPointerException ex) {
+            System.err.println("Erro ao conectar ao banco de dados: " + ex.getMessage());
             updateConnectionStatusPanel(false);
         }
     }
@@ -127,7 +87,6 @@ public class home extends javax.swing.JFrame {
         Color lightBlue = new Color(0, 153, 255);
         Color red = new Color(255, 0, 0);
 
-        //System.out.println(isConnected);
         if (isConnected) {
             connPanel.setBackground(lightBlue);
             msgPanel.setText("A conexão com o banco está funcionando corretamente! Ao trabalho.");
@@ -138,35 +97,24 @@ public class home extends javax.swing.JFrame {
             msgPanel.setForeground(white);
         }
     }
-    
-    private void setStyles() {
-        Color backgroundColor = new Color(245, 245, 245);
-        Color panelBackgroundColor = new Color(230, 230, 230);
-        Color tableBackgroundColor = new Color(255, 255, 255);
-        Color headerColor = new Color(200, 200, 200);
 
-        Font titleFont = new Font("SansSerif", Font.BOLD, 14);
-        Font tableFont = new Font("SansSerif", Font.PLAIN, 12);
-
-        this.getContentPane().setBackground(backgroundColor);
-        jPanel1.setBackground(panelBackgroundColor);
-        jPanel1.setBorder(new EmptyBorder(10, 10, 10, 10));
-
-        JTpedidos.setFont(tableFont);
-        JTpedidos.setBackground(tableBackgroundColor);
-        JTpedidos.setGridColor(new Color(210, 210, 210));
-        JTpedidos.getTableHeader().setFont(titleFont);
-        JTpedidos.getTableHeader().setBackground(headerColor);
-        JTpedidos.getTableHeader().setForeground(Color.DARK_GRAY);
-
-        jMenuBar1.setBackground(headerColor);
-        jMenuBar1.setBorderPainted(false);
-        acoes.setFont(titleFont);
-        cardapio.setFont(titleFont);
-
-        jPanel1.add(connPanel);
+    // Fecha o ExecutorService quando a aplicação for fechada
+    @Override
+    public void dispose() {
+        if (connectionChecker != null && !connectionChecker.isShutdown()) {
+            connectionChecker.shutdown();
+            try {
+                if (!connectionChecker.awaitTermination(1, TimeUnit.SECONDS)) {
+                    connectionChecker.shutdownNow();
+                }
+            } catch (InterruptedException ex) {
+                connectionChecker.shutdownNow();
+                System.err.println("Erro ao encerrar ExecutorService: " + ex.getMessage());
+            }
+        }
+        super.dispose();
     }
-    
+
     private void setKeyboardShortcuts() {
         // Shortcut Alt+S para "Sabores"
         JRootPane rootPane = this.getRootPane();
@@ -196,39 +144,101 @@ public class home extends javax.swing.JFrame {
             }
         });
     }
-    
-    private static void atualizarPelaTabelaP(int id, String sabor, String tamanho, String bebida, String cliente, String rua, String bairro, int numero, String hora, double preco) {
-        try (Connection conn = Database.getConnection()) {  // Obtém conexão com o banco
-            String query = "UPDATE pedido SET sabor = ?, tamanho = ?, bebida = ?, nomeCliente = ?, rua = ?, bairro = ?, numero = ?, hora = ?, precoFinal = ? WHERE id_pedido = ?";  // SQL com placeholders
-            PreparedStatement stmt = conn.prepareStatement(query);
 
-            stmt.setString(1, sabor);
-            stmt.setString(2, tamanho);
-            stmt.setString(3, bebida);
-            stmt.setString(4, cliente);
-            stmt.setString(5, rua);
-            stmt.setString(6, bairro);
-            stmt.setInt(7, numero);
-            stmt.setString(8, hora);
-            stmt.setDouble(9, preco);
-            stmt.setInt(10, id);
-            stmt.executeUpdate();
+    private void setStyles() {
+        Color backgroundColor = new Color(245, 245, 245);
+        Color panelBackgroundColor = new Color(230, 230, 230);
+        Color tableBackgroundColor = new Color(255, 255, 255);
+        Color headerColor = new Color(200, 200, 200);
 
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Erro ao salvar no banco de dados: " + ex.getMessage());
-        }
+        Font titleFont = new Font("SansSerif", Font.BOLD, 14);
+        Font tableFont = new Font("SansSerif", Font.PLAIN, 12);
+
+        this.getContentPane().setBackground(backgroundColor);
+        jPanel1.setBackground(panelBackgroundColor);
+        jPanel1.setBorder(new EmptyBorder(10, 10, 10, 10));
+
+        JTpedidos.setFont(tableFont);
+        JTpedidos.setBackground(tableBackgroundColor);
+        JTpedidos.setGridColor(new Color(210, 210, 210));
+        JTpedidos.getTableHeader().setFont(titleFont);
+        JTpedidos.getTableHeader().setBackground(headerColor);
+        JTpedidos.getTableHeader().setForeground(Color.DARK_GRAY);
+
+        jMenuBar1.setBackground(headerColor);
+        jMenuBar1.setBorderPainted(false);
+        acoes.setFont(titleFont);
+        cardapio.setFont(titleFont);
+
+        jPanel1.add(connPanel);
     }
 
-    private static void excluirPelaTabelaP(int id) {
-        try (Connection conn = Database.getConnection()) {  // Obtém conexão com o banco
-            String query = "DELETE FROM pedido WHERE id_pedido = ?";  // SQL com placeholders
-            PreparedStatement stmt = conn.prepareStatement(query);
-            stmt.setInt(1, id);  // Apenas o id é necessário para a exclusão
-            stmt.executeUpdate();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Erro ao excluir do banco de dados: " + ex.getMessage());
+    private void initSearchField() {
+        JPanel mainPanel = new JPanel(null);
+        mainPanel.setLayout(null);
+
+        searchPanel = new JPanel(null);
+        searchPanel.setBounds(10, 10, 600, 30);
+        searchField = new JTextField();
+        searchField.setBounds(70, 5, 400, 20);
+
+        JLabel labelBuscar = new JLabel("Buscar:");
+        labelBuscar.setBounds(10, 5, 50, 20);
+        searchPanel.add(labelBuscar);
+        searchPanel.add(searchField);
+        mainPanel.add(searchPanel);
+
+        JTpedidos.setModel(tabelaPedidos);
+        sorter = new TableRowSorter<>(tabelaPedidos);
+        JTpedidos.setRowSorter(sorter);
+
+        JScrollPane scrollPane = new JScrollPane(JTpedidos);
+        scrollPane.setBounds(10, 50, 600, 400);
+        mainPanel.add(scrollPane);
+
+        Color whiteBackground = new Color(255, 255, 255);
+        Color ligthBlue = new Color(0, 153, 255);
+        Color red = new Color(255, 0, 0);
+        connPanel.setBounds(10, 460, 600, 30);
+        Connection conn = Database.getConnection();
+        if (conn == null) {
+            connPanel.setBackground(red);
+            msgPanel.setText("Você não está conectado ao servidor! Os recursos do sistema não funcionarão corretamente.");
+            msgPanel.setForeground(Color.white);
+        } else {
+            connPanel.setBackground(ligthBlue);
+            msgPanel.setText("A conexão com o banco está funcionando corretamente! Ao trabalho.");
+            msgPanel.setForeground(whiteBackground);
+        }
+        mainPanel.add(connPanel);
+
+        setContentPane(mainPanel);
+        setSize(640, 540);
+
+        searchField.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                filterTable();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                filterTable();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                filterTable();
+            }
+        });
+    }
+
+    private void filterTable() {
+        String query = searchField.getText().toLowerCase().trim();
+        if (query.isEmpty()) {
+            sorter.setRowFilter(null);
+        } else {
+            sorter.setRowFilter(RowFilter.regexFilter("(?i)" + query));
         }
     }
 
@@ -280,85 +290,6 @@ public class home extends javax.swing.JFrame {
             }
         }
     }
-    
-    private void initSearchField() {
-        // Painel principal que vai conter a busca, tabela e o connPanel
-        JPanel mainPanel = new JPanel(null);
-        mainPanel.setLayout(null); // Para controle manual do layout
-
-        // Configuração do painel de busca com posição e tamanho fixos
-        searchPanel = new JPanel(null);
-        searchPanel.setBounds(10, 10, 600, 30); // Ajuste do tamanho do painel de busca
-        searchField = new JTextField();
-        searchField.setBounds(70, 5, 400, 20);  // Campo de busca no painel
-
-        // Adiciona os componentes ao painel de busca
-        JLabel labelBuscar = new JLabel("Buscar:");
-        labelBuscar.setBounds(10, 5, 50, 20); // Texto de busca
-        searchPanel.add(labelBuscar);
-        searchPanel.add(searchField);
-
-        // Adiciona o painel de busca ao painel principal
-        mainPanel.add(searchPanel);
-
-        // Configuração da tabela com rolagem
-        JTpedidos.setModel(tabelaPedidos);  // Garante que JTpedidos use o modelo correto
-        sorter = new TableRowSorter<>(tabelaPedidos); // Inicializa o sorter
-        JTpedidos.setRowSorter(sorter); // Associa o sorter à tabela
-
-        JScrollPane scrollPane = new JScrollPane(JTpedidos); // Tabela dentro de JScrollPane
-        scrollPane.setBounds(10, 50, 600, 400); // Ajuste da posição e tamanho da tabela
-        mainPanel.add(scrollPane); // Adiciona ao painel principal
-
-        // Configuração do painel de conexão (connPanel)
-        Color whiteBackground = new Color(255, 255, 255);
-        Color ligthBlue = new Color(0, 153, 255);
-        Color red = new Color(255, 0, 0);// White background for connPanel
-        connPanel.setBounds(10, 460, 600, 30);  // Define o tamanho e posição do connPanel
-        Connection conn = Database.getConnection();
-        if (conn == null) {
-            connPanel.setBackground(red); // Red background
-            msgPanel.setText("Você não está conectado ao servidor! Os recursos do sistema não funcionarão corretamente.");
-            msgPanel.setForeground(Color.white);
-        } else {
-            connPanel.setBackground(ligthBlue);// Blue background
-            msgPanel.setText("A conexão com o banco está funcionando corretamente! Ao trabalho.");
-            msgPanel.setForeground(whiteBackground);
-        }
-        mainPanel.add(connPanel); // Adiciona connPanel ao painel principal
-
-        // Configuração da janela principal
-        setContentPane(mainPanel); // Define o mainPanel como o conteúdo principal
-        setSize(640, 540); // Ajusta o tamanho da janela para acomodar todos os componentes
-
-        // Listener para busca em tempo real
-        searchField.getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                filterTable();
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                filterTable();
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                filterTable();
-            }
-        });
-    }
-
-    private void filterTable() {
-        String query = searchField.getText().toLowerCase().trim();
-
-        if (query.isEmpty()) {
-            sorter.setRowFilter(null); // Mostra tudo se o campo estiver vazio
-        } else {
-            sorter.setRowFilter(RowFilter.regexFilter("(?i)" + query)); // Filtro de busca
-        }
-    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -400,6 +331,7 @@ public class home extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        setIconImage((new javax.swing.ImageIcon(getClass().getResource("/monitor.png"))).getImage());
 
         connPanel.setBackground(new java.awt.Color(255, 255, 255));
         connPanel.setPreferredSize(new java.awt.Dimension(150, 300));
@@ -518,7 +450,7 @@ public class home extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    
+
     private void fazPActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fazPActionPerformed
         IntPizza j = new IntPizza(this);
         j.Show();
