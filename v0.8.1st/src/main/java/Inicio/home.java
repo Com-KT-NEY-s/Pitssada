@@ -104,8 +104,6 @@ public class home extends javax.swing.JFrame {
         initSearchField();
     }
     
-    // <editor-fold defaultstate="collapsed" desc="Conexao Banco">
-    
     private Timer connectionUpdate = new Timer(1000, new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -141,10 +139,6 @@ public class home extends javax.swing.JFrame {
         }
     }
     
-    // </editor-fold>
-    
-    //<editor-fold defaultstate="collapsed" desc="Estilo">
-    
     private void setStyles() {
         Color backgroundColor = new Color(245, 245, 245);
         Color panelBackgroundColor = new Color(230, 230, 230);
@@ -172,10 +166,6 @@ public class home extends javax.swing.JFrame {
 
         jPanel1.add(connPanel);
     }
-    
-    // </editor-fold>    
-    
-    //<editor-fold defaultstate="collapsed" desc="Atalhos">
     
     private void setKeyboardShortcuts() {
         // Shortcut Alt+S para "Sabores"
@@ -206,10 +196,6 @@ public class home extends javax.swing.JFrame {
             }
         });
     }
-    
-    // </editor-fold>
-    
-    //<editor-fold defaultstate="collapsed" desc="Tabela Pedidos">
     
     private static void atualizarPelaTabelaP(int id, String sabor, String tamanho, String bebida, String cliente, String rua, String bairro, int numero, String hora, double preco) {
         try (Connection conn = Database.getConnection()) {  // Obtém conexão com o banco
@@ -295,10 +281,6 @@ public class home extends javax.swing.JFrame {
         }
     }
     
-    // </editor-fold>
-    
-    //<editor-fold defaultstate="collapsed" desc="Campo de Busca">
-    
     private void initSearchField() {
         // Painel principal que vai conter a busca, tabela e o connPanel
         JPanel mainPanel = new JPanel(null);
@@ -377,8 +359,6 @@ public class home extends javax.swing.JFrame {
             sorter.setRowFilter(RowFilter.regexFilter("(?i)" + query)); // Filtro de busca
         }
     }
-    
-    // </editor-fold>
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -538,7 +518,7 @@ public class home extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    //<editor-fold defaultstate="collapsed" desc="Actions">
+    
     private void fazPActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fazPActionPerformed
         IntPizza j = new IntPizza(this);
         j.Show();
@@ -568,7 +548,7 @@ public class home extends javax.swing.JFrame {
         j.setVisible(true);
         j.setLocationRelativeTo(null);
     }//GEN-LAST:event_jMenuItem2ActionPerformed
-    // </editor-fold>
+
     /**
      * @param args the command line arguments
      */
