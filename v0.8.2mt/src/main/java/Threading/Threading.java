@@ -8,10 +8,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class Threading extends Thread {
-    
-    private ScheduledExecutorService connectionChecker;  // ExecutorService para a tarefa de verificação
+public class Threading {
+
     private Connection connection = null;
+    private ScheduledExecutorService connectionChecker;
     
     // Inicia o ScheduledExecutorService para checar a conexão do banco em background
     public void startDatabaseConnectionChecker() {
@@ -40,4 +40,5 @@ public class Threading extends Thread {
             h.updateConnectionStatusPanel(false);
         }
     }
+
 }
