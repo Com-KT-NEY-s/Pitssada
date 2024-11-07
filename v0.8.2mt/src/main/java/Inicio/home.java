@@ -9,6 +9,7 @@ import java.awt.*;
 import javax.swing.*;
 import DB.Database;
 import static DB.Database.getConnection;
+import Threading.Threading;
 import com.formdev.flatlaf.FlatLightLaf;
 import java.awt.event.*;
 import java.io.BufferedWriter;
@@ -56,39 +57,13 @@ public class home extends javax.swing.JFrame {
         jMenuItem2.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_B, InputEvent.ALT_DOWN_MASK));
 
         // Inicializa o ExecutorService para a verificação de conexão com o banco
-        startDatabaseConnectionChecker();
+        Threading t = new Threading();
+        t.startDatabaseConnectionChecker();
 
         initSearchField();
     }
 
-    // Inicia o ScheduledExecutorService para checar a conexão do banco em background
-    private void startDatabaseConnectionChecker() {
-        connectionChecker = Executors.newScheduledThreadPool(1);
-        connectionChecker.scheduleAtFixedRate(() -> {
-            Thread.currentThread().setName("Timer");
-            try {
-                checkDatabaseConnection();
-            } catch (Exception ex) {
-                System.err.println("Erro na verificação de conexão: " + ex.getMessage());
-                ex.printStackTrace();
-            }
-        }, 0, 1, TimeUnit.SECONDS);
-    }
-
-    private void checkDatabaseConnection() {
-        try {
-            connection = getConnection();
-            updateConnectionStatusPanel(connection != null && !connection.isClosed());
-            if (connection != null) {
-                connection.close();
-            }
-        } catch (SQLException | NullPointerException ex) {
-            System.err.println("Erro ao conectar ao banco de dados: " + ex.getMessage());
-            updateConnectionStatusPanel(false);
-        }
-    }
-
-    private void updateConnectionStatusPanel(boolean isConnected) {
+    public void updateConnectionStatusPanel(boolean isConnected) {
         Color white = new Color(255, 255, 255);
         Color lightBlue = new Color(0, 153, 255);
         Color red = new Color(255, 0, 0);
@@ -315,6 +290,7 @@ public class home extends javax.swing.JFrame {
             e.printStackTrace();
         }
     }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always

@@ -35,6 +35,7 @@ Cardapio\JCardapio$4.class
 Cardapio\addTamanho.class
 Pedido\IntPizza$1.class
 Inicio\home.class
+Threading\Threading.class
 Cardapio\addSabor$3.class
 Cardapio\Cardapio.class
 Cardapio\JCardapio$11.class
