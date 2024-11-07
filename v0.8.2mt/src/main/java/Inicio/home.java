@@ -9,7 +9,6 @@ import java.awt.*;
 import javax.swing.*;
 import DB.Database;
 import static DB.Database.getConnection;
-import Threading.Threading;
 import com.formdev.flatlaf.FlatLightLaf;
 import java.awt.event.*;
 import java.io.BufferedWriter;
@@ -57,10 +56,37 @@ public class home extends javax.swing.JFrame {
         jMenuItem2.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_B, InputEvent.ALT_DOWN_MASK));
 
         // Inicializa o ExecutorService para a verificação de conexão com o banco
-        Threading t = new Threading();
-        t.startDatabaseConnectionChecker();
+        startDatabaseConnectionChecker();
 
         initSearchField();
+    }
+
+    // Inicia o ScheduledExecutorService para checar a conexão do banco em background
+    public void startDatabaseConnectionChecker() {
+        connectionChecker = Executors.newScheduledThreadPool(1);
+        connectionChecker.scheduleAtFixedRate(() -> {
+            Thread.currentThread().setName("Timer");
+            try {
+                checkDatabaseConnection();
+            } catch (Exception ex) {
+                System.err.println("Erro na verificação de conexão: " + ex.getMessage());
+                ex.printStackTrace();
+            }
+        }, 0, 1, TimeUnit.SECONDS);
+    }
+
+    public void checkDatabaseConnection() {
+        home h = new home();
+        try {
+            connection = getConnection();
+            h.updateConnectionStatusPanel(connection != null && !connection.isClosed());
+            if (connection != null) {
+                connection.close();
+            }
+        } catch (SQLException | NullPointerException ex) {
+            System.err.println("Erro ao conectar ao banco de dados: " + ex.getMessage());
+            h.updateConnectionStatusPanel(false);
+        }
     }
 
     public void updateConnectionStatusPanel(boolean isConnected) {
