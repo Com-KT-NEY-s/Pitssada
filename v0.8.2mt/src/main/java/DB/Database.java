@@ -15,6 +15,7 @@ public class Database {
             );  
         } catch(SQLException ex) {
             //Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("Erro de conexão");
         }
         return null;
     }
