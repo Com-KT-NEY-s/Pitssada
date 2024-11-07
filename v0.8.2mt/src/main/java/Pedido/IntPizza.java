@@ -3,6 +3,9 @@ package Pedido;
 import Inicio.home;
 import DB.Database;
 import java.awt.event.*;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.*;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -36,11 +39,11 @@ public class IntPizza extends javax.swing.JDialog {
             }
         });
     }
-    
-    public void Show(){
+
+    public void Show() {
         this.setVisible(true);
     }
-    
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -303,7 +306,7 @@ public class IntPizza extends javax.swing.JDialog {
                 + "Rua: " + rua + "\n"
                 + "Bairro: " + bairro + "\n"
                 + "Número Casa: " + nCasa + "\n"
-                + "Hora: " + hora+ "\n"
+                + "Hora: " + hora + "\n"
                 + "-------------------------------\n"
                 + "PEDIDOS\n"
                 + "Sabor: " + sabor + "\n"
@@ -318,11 +321,46 @@ public class IntPizza extends javax.swing.JDialog {
         if (print == JOptionPane.YES_OPTION) {
             JOptionPane.showMessageDialog(rootPane, "Fasido");
             enviarPedido();
+            log(nomeC, rua, bairro, nCasa, hora, sabor, tamanho, bebida, precoFinal);
             dispose();
         } else if (print == JOptionPane.NO_OPTION) {
             JOptionPane.showMessageDialog(rootPane, "Beta");
         } else {
             JOptionPane.showMessageDialog(rootPane, "Beta");
+        }
+    }
+
+    public void log(String nomeC, String rua, String bairro, int nCasa, String hora, String sabor, String tamanho, String bebida, double precoFinal) {
+        // Define o caminho do arquivo
+        String filePath = "pedidos.txt";
+
+        try (FileWriter fw = new FileWriter(filePath, true); // O parâmetro "true" permite a atualização do arquivo
+                 PrintWriter pw = new PrintWriter(fw)) {
+
+            // Escreve os dados do pedido no arquivo
+            pw.println("-------------------------------");
+            pw.println("Cliente: " + nomeC);
+            pw.println("Rua: " + rua);
+            pw.println("Bairro: " + bairro);
+            pw.println("Número Casa: " + nCasa);
+            pw.println("Hora: " + hora);
+            pw.println("-------------------------------");
+            pw.println("PEDIDOS");
+            pw.println("Sabor: " + sabor);
+            pw.println("Tamanho: " + tamanho);
+            pw.println("Bebida: " + bebida);
+            pw.println("-------------------------------");
+            pw.println("PREÇO");
+            pw.println("Total: " + precoFinal);
+            pw.println("-------------------------------\n");
+            pw.println("\n");
+
+            // Exibe uma mensagem confirmando o salvamento
+            System.out.println("Pedido registrado no arquivo com sucesso.");
+        } catch (IOException e) {
+            // Trata possíveis erros de I/O
+            JOptionPane.showMessageDialog(this, "Erro ao salvar o pedido no arquivo.", "Erro", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
         }
     }
 

@@ -11,6 +11,10 @@ import DB.Database;
 import static DB.Database.getConnection;
 import com.formdev.flatlaf.FlatLightLaf;
 import java.awt.event.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.sql.*;
 import java.util.concurrent.*;
 import javax.swing.border.EmptyBorder;
@@ -25,6 +29,8 @@ public class home extends javax.swing.JFrame {
     private TableRowSorter<DefaultTableModel> sorter;
     private Connection connection = null;
     private ScheduledExecutorService connectionChecker;  // ExecutorService para a tarefa de verificação
+    private static File loadedFile = null; // verifies if a file was loaded || verifica se um arquivo foi carregado
+    private static DefaultTableModel tableModel; // tabel model || model da tabela
 
     public home() {
         super("Início");
@@ -291,6 +297,24 @@ public class home extends javax.swing.JFrame {
         }
     }
 
+    private static void updateOutputFile() {
+        if (loadedFile == null) {
+            // Não faz nada se não houver um arquivo carregado
+            return;
+        }
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(loadedFile))) {
+            for (int i = 0; i < tableModel.getRowCount(); i++) {
+                for (int j = 0; j < tableModel.getColumnCount(); j++) {
+                    writer.write(tableModel.getColumnName(j) + ": " + tableModel.getValueAt(i, j));
+                    writer.newLine();
+                }
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
