@@ -31,6 +31,7 @@ public class home extends javax.swing.JFrame {
     private ScheduledExecutorService connectionChecker;  // ExecutorService para a tarefa de verificação
     private static File loadedFile = null; // verifies if a file was loaded || verifica se um arquivo foi carregado
     private static DefaultTableModel tableModel; // tabel model || model da tabela
+    public int numeroCaixa;
 
     public home() {
         super("Início");
@@ -254,9 +255,13 @@ public class home extends javax.swing.JFrame {
         ResultSet rs = null;
 
         try {
-            String sql = "SELECT id_pedido, sabor, tamanho, bebida, nomeCliente, rua, bairro, numero, hora, precoFinal FROM pedido";
+            String sql = "SELECT id_pedido, sabor, tamanho, bebida, nomeCliente, rua, bairro, numero, hora, precoFinal FROM pedido WHERE id_caixa = ?";
+            
             stmt = conn.prepareStatement(sql);
+            
+            stmt.setInt(1, caixa.getIDCaixa());
             rs = stmt.executeQuery();
+            
 
             // Limpa a tabela antes de adicionar novos dados
             tabelaPedidos.setRowCount(0);
@@ -455,7 +460,6 @@ public class home extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
 
     private void fazPActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fazPActionPerformed
         IntPizza j = new IntPizza(this);

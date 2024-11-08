@@ -1,14 +1,23 @@
 package Inicio;
 
 import DB.Database;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import java.awt.event.*;
+import java.sql.*;
 import javax.swing.table.DefaultTableModel;
 
 public class caixa extends javax.swing.JFrame {
 
-    private DefaultTableModel tabelaCaixas = new DefaultTableModel(new Object[]{"Caixa", "Funcionário", "Aberto"}, 0);
+    private DefaultTableModel tabelaCaixas = new DefaultTableModel(new Object[]{"Caixa", "Funcionário", "Aberto"}, 0) {
+        @Override
+        public boolean isCellEditable(int row, int column) {
+            return false;  // Torna todas as células não editáveis
+        }
+    };
+    private static int id_caixa;
+
+    public static int getIDCaixa() {
+        return id_caixa;
+    }
 
     /**
      * Creates new form caixa
@@ -17,6 +26,9 @@ public class caixa extends javax.swing.JFrame {
         initComponents();
         setLocationRelativeTo(null);
         listaCaixas();
+
+        // Adiciona ouvintes para clique duplo e tecla Enter
+        addEventListeners();
     }
 
     public void listaCaixas() {
@@ -33,16 +45,14 @@ public class caixa extends javax.swing.JFrame {
             tabelaCaixas.setRowCount(0);
 
             while (rs.next()) {
-                // Verifica se o caixa está aberto e define a string correspondente
                 String aberto = rs.getBoolean("aberto") ? "Sim" : "Não";
 
-                // Recupera os dados e adiciona à tabela
                 Object[] row = {
                     rs.getInt("caixa"),
                     rs.getString("nome_funcionario"),
-                    aberto // Usa "Sim" ou "Não" com base no valor de 'aberto'
+                    aberto
                 };
-                tabelaCaixas.addRow(row);  // Adiciona cada linha à tabela
+                tabelaCaixas.addRow(row);
             }
 
         } catch (Exception e) {
@@ -61,6 +71,39 @@ public class caixa extends javax.swing.JFrame {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    private void addEventListeners() {
+        // Ouvinte para clique duplo na tabela
+        jTable1.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 2) {  // Verifica duplo clique
+                    abrirDetalhesCaixa();
+                }
+            }
+        });
+
+        // Ouvinte para tecla Enter
+        jTable1.addKeyListener(new KeyAdapter() {
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {  // Verifica tecla Enter
+                    abrirDetalhesCaixa();
+                }
+            }
+        });
+    }
+
+    private void abrirDetalhesCaixa() {
+        int selectedRow = jTable1.getSelectedRow();
+        if (selectedRow != -1) {
+            // Obtém o número do caixa da linha selecionada (primeira coluna)
+            id_caixa = (int) tabelaCaixas.getValueAt(selectedRow, 0);
+
+            // Abre a janela de detalhes do caixa, passando o número do caixa
+            home h = new home();
+            h.setVisible(true);
+            dispose();
         }
     }
 
