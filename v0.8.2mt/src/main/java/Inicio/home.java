@@ -1,5 +1,6 @@
 package Inicio;
 
+import Caixa.caixa;
 import Cardapio.addTamanho;
 import Cardapio.addSabor;
 import Cardapio.addBebida;
