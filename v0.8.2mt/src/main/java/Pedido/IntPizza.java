@@ -1,5 +1,6 @@
 package Pedido;
 
+import Arquivos.Lucro;
 import Inicio.home;
 import DB.Database;
 import java.awt.event.*;
@@ -76,11 +77,6 @@ public class IntPizza extends javax.swing.JDialog {
         comboTamanho.setSelectedItem(null);
 
         comboSabor.setSelectedItem(null);
-        comboSabor.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                comboSaborActionPerformed(evt);
-            }
-        });
 
         comboBebida.setSelectedItem(null);
 
@@ -106,18 +102,6 @@ public class IntPizza extends javax.swing.JDialog {
         bairro.setText("Bairro");
 
         nCasa.setText("Nº");
-
-        inputNumeroCasa.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                inputNumeroCasaActionPerformed(evt);
-            }
-        });
-
-        inputBairro.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                inputBairroActionPerformed(evt);
-            }
-        });
 
         jLabel4.setFont(new java.awt.Font("Segoe UI", 0, 36)); // NOI18N
         jLabel4.setText("Fazer Pedido");
@@ -215,18 +199,6 @@ public class IntPizza extends javax.swing.JDialog {
         print();
     }//GEN-LAST:event_enviarActionPerformed
 
-    private void comboSaborActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboSaborActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_comboSaborActionPerformed
-
-    private void inputBairroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_inputBairroActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_inputBairroActionPerformed
-
-    private void inputNumeroCasaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_inputNumeroCasaActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_inputNumeroCasaActionPerformed
-
     /**
      * @param args the command line arguments
      */
@@ -318,49 +290,20 @@ public class IntPizza extends javax.swing.JDialog {
                 + "-------------------------------\n"
         );
 
-        if (print == JOptionPane.YES_OPTION) {
-            JOptionPane.showMessageDialog(rootPane, "Fasido");
-            enviarPedido();
-            log(nomeC, rua, bairro, nCasa, hora, sabor, tamanho, bebida, precoFinal);
-            dispose();
-        } else if (print == JOptionPane.NO_OPTION) {
-            JOptionPane.showMessageDialog(rootPane, "Beta");
-        } else {
-            JOptionPane.showMessageDialog(rootPane, "Beta");
-        }
-    }
-
-    public void log(String nomeC, String rua, String bairro, int nCasa, String hora, String sabor, String tamanho, String bebida, double precoFinal) {
-        // Define o caminho do arquivo
-        String filePath = "pedidos.txt";
-
-        try (FileWriter fw = new FileWriter(filePath, true); // O parâmetro "true" permite a atualização do arquivo
-                 PrintWriter pw = new PrintWriter(fw)) {
-
-            // Escreve os dados do pedido no arquivo
-            pw.println("-------------------------------");
-            pw.println("Cliente: " + nomeC);
-            pw.println("Rua: " + rua);
-            pw.println("Bairro: " + bairro);
-            pw.println("Número Casa: " + nCasa);
-            pw.println("Hora: " + hora);
-            pw.println("-------------------------------");
-            pw.println("PEDIDOS");
-            pw.println("Sabor: " + sabor);
-            pw.println("Tamanho: " + tamanho);
-            pw.println("Bebida: " + bebida);
-            pw.println("-------------------------------");
-            pw.println("PREÇO");
-            pw.println("Total: " + precoFinal);
-            pw.println("-------------------------------\n");
-            pw.println("\n");
-
-            // Exibe uma mensagem confirmando o salvamento
-            System.out.println("Pedido registrado no arquivo com sucesso.");
-        } catch (IOException e) {
-            // Trata possíveis erros de I/O
-            JOptionPane.showMessageDialog(this, "Erro ao salvar o pedido no arquivo.", "Erro", JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
+        switch (print) {
+            case JOptionPane.YES_OPTION:
+                JOptionPane.showMessageDialog(rootPane, "Fasido");
+                enviarPedido();
+                dispose();
+                Lucro l = new Lucro();
+                l.escreveLucro(precoFinal);
+                break;
+            case JOptionPane.NO_OPTION:
+                JOptionPane.showMessageDialog(rootPane, "Beta");
+                break;
+            default:
+                JOptionPane.showMessageDialog(rootPane, "Beta");
+                break;
         }
     }
 

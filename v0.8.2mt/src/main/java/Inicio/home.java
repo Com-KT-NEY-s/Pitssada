@@ -65,7 +65,6 @@ public class home extends javax.swing.JFrame {
     public void startDatabaseConnectionChecker() {
         connectionChecker = Executors.newScheduledThreadPool(1);
         connectionChecker.scheduleAtFixedRate(() -> {
-            System.out.println("bom dia");
             try {
                 checkDatabaseConnection();
             } catch (Exception ex) {
@@ -295,25 +294,6 @@ public class home extends javax.swing.JFrame {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }
-    }
-
-    private static void updateOutputFile() {
-        if (loadedFile == null) {
-            // Não faz nada se não houver um arquivo carregado
-            return;
-        }
-
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(loadedFile))) {
-            for (int i = 0; i < tableModel.getRowCount(); i++) {
-                for (int j = 0; j < tableModel.getColumnCount(); j++) {
-                    writer.write(tableModel.getColumnName(j) + ": " + tableModel.getValueAt(i, j));
-                    writer.newLine();
-                }
-                writer.newLine();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 

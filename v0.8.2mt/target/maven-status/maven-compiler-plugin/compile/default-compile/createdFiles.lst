@@ -2,14 +2,15 @@ Cardapio\JCardapio$2.class
 Cardapio\addSabor$1.class
 Cardapio\addTamanho$1.class
 Cardapio\JCardapio$9.class
+Inicio\caixa.class
 Cardapio\JCardapio$8$1.class
 Cardapio\addSabor$5.class
 Cardapio\JCardapio$5.class
 Inicio\home$2.class
 Cardapio\addTamanho$5.class
 Cardapio\addBebida$5.class
-Pedido\IntPizza$6.class
 Inicio\home$5.class
+Inicio\caixa$1.class
 Cardapio\JCardapio$3.class
 Inicio\home$8.class
 Cardapio\addTamanho$2.class
@@ -19,12 +20,10 @@ Cardapio\JCardapio.class
 Cardapio\addBebida$6.class
 Inicio\home$4.class
 Pedido\IntPizza$2.class
-Pedido\IntPizza$5.class
 Cardapio\JCardapio$10.class
 Cardapio\addSabor$4.class
 Cardapio\JCardapio$6.class
 Inicio\home$1.class
-Pedido\IntPizza$4.class
 Cardapio\addBebida$3.class
 Cardapio\JCardapio$7.class
 Inicio\home$10.class
@@ -51,6 +50,7 @@ Inicio\home$9.class
 Cardapio\addTamanho$4.class
 Pedido\Pitzzaria.class
 DB\Database.class
+Arquivos\Lucro.class
 Cardapio\addBebida$1.class
 Pedido\IntPizza.class
 Cardapio\addBebida$4.class
