@@ -164,6 +164,26 @@ public class Caixa extends javax.swing.JFrame {
                 fecharCaixa();
             }
         });
+        
+        // Atalho Alt+E para fechar caixa
+        KeyStroke keyStrokeOpenFuncionarios = KeyStroke.getKeyStroke("alt G");
+        getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(keyStrokeOpenFuncionarios, "abrirFunc");
+        getRootPane().getActionMap().put("abrirFunc", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                abrirJanFunc();
+            }
+        });
+        
+        // Atalho Alt+E para fechar caixa
+        KeyStroke keyStrokeAddFuncionarios = KeyStroke.getKeyStroke("alt F");
+        getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(keyStrokeAddFuncionarios, "addFunc");
+        getRootPane().getActionMap().put("addFunc", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                abrirAddFunc();
+            }
+        });
     }
 
     private void abrirJanCaixa() {

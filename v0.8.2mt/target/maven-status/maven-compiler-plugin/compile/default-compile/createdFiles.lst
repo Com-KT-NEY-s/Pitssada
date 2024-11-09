@@ -1,6 +1,7 @@
 Cardapio\JCardapio$2.class
 Cardapio\addSabor$1.class
 Cardapio\addTamanho$1.class
+Caixa\Caixa$11.class
 Cardapio\JCardapio$9.class
 Caixa\Caixa$6.class
 Caixa\Caixa.class
@@ -47,6 +48,7 @@ Cardapio\Cardapio.class
 Cardapio\JCardapio$11.class
 Caixa\Caixa$5.class
 Caixa\Caixa$8.class
+Caixa\Caixa$10.class
 Cardapio\JCardapio$9$1.class
 Caixa\addCaixa$2.class
 Inicio\home$6.class
@@ -54,6 +56,7 @@ Cardapio\JCardapio$8.class
 Caixa\Caixa$7.class
 Cardapio\JCardapio$1.class
 Cardapio\JCardapio$10$1.class
+Funcionarios\addFuncionarios$2.class
 Cardapio\addSabor$2.class
 Cardapio\addBebida$7.class
 Caixa\addCaixa.class

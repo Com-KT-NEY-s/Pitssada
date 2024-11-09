@@ -1,18 +1,7 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package Funcionarios;
 
-/**
- *
- * @author GUILHERMEMATHIACK
- */
 public class addFuncionarios extends javax.swing.JFrame {
 
-    /**
-     * Creates new form addFuncionarios
-     */
     public addFuncionarios() {
         initComponents();
     }
@@ -45,6 +34,11 @@ public class addFuncionarios extends javax.swing.JFrame {
         jLabel3.setText("CPF");
 
         jButton1.setText("Adicionar");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         jLabel4.setText("Idade");
 
@@ -98,6 +92,13 @@ public class addFuncionarios extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        adicionarFuncionario();
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    public void adicionarFuncionario() {
+        
+    }
     /**
      * @param args the command line arguments
      */
