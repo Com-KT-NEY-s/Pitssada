@@ -2,6 +2,7 @@ Cardapio\JCardapio$2.class
 Cardapio\addSabor$1.class
 Cardapio\addTamanho$1.class
 Cardapio\JCardapio$9.class
+Caixa\Caixa$6.class
 Caixa\Caixa.class
 Caixa\Caixa$3.class
 Cardapio\JCardapio$8$1.class
@@ -11,6 +12,7 @@ Inicio\home$2.class
 Cardapio\addTamanho$5.class
 Cardapio\addBebida$5.class
 Inicio\home$5.class
+Inicio\home$11.class
 Cardapio\JCardapio$3.class
 Inicio\home$8.class
 Cardapio\addTamanho$2.class
@@ -39,10 +41,12 @@ Inicio\home.class
 Cardapio\addSabor$3.class
 Cardapio\Cardapio.class
 Cardapio\JCardapio$11.class
+Caixa\Caixa$5.class
 Cardapio\JCardapio$9$1.class
 Caixa\addCaixa$2.class
 Inicio\home$6.class
 Cardapio\JCardapio$8.class
+Caixa\Caixa$7.class
 Cardapio\JCardapio$1.class
 Cardapio\JCardapio$10$1.class
 Cardapio\addSabor$2.class

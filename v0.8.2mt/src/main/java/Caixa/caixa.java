@@ -7,6 +7,8 @@ import java.awt.event.*;
 import java.sql.*;
 import javax.swing.AbstractAction;
 import javax.swing.JComponent;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -34,7 +36,7 @@ public final class Caixa extends javax.swing.JFrame {
         initComponents();
         setLocationRelativeTo(null);
         listaCaixas();
-        
+
         configurarAtalho();
 
         // Adiciona ouvintes para clique duplo e tecla Enter
@@ -66,6 +68,7 @@ public final class Caixa extends javax.swing.JFrame {
             }
 
         } catch (SQLException e) {
+            e.printStackTrace();
         } finally {
             try {
                 if (rs != null) {
@@ -78,6 +81,7 @@ public final class Caixa extends javax.swing.JFrame {
                     conn.close();
                 }
             } catch (SQLException e) {
+                e.printStackTrace();
             }
         }
     }
@@ -87,7 +91,7 @@ public final class Caixa extends javax.swing.JFrame {
         jTable1.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() == 2) {  // Verifica duplo clique
+                if (e.getClickCount() == 2) {
                     abrirDetalhesCaixa();
                 }
             }
@@ -97,7 +101,7 @@ public final class Caixa extends javax.swing.JFrame {
         jTable1.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_ENTER) {  // Verifica tecla Enter
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                     abrirDetalhesCaixa();
                 }
             }
@@ -107,10 +111,7 @@ public final class Caixa extends javax.swing.JFrame {
     private void abrirDetalhesCaixa() {
         int selectedRow = jTable1.getSelectedRow();
         if (selectedRow != -1) {
-            // Obtém o número do caixa da linha selecionada (primeira coluna)
             id_caixa = (int) tabelaCaixas.getValueAt(selectedRow, 0);
-
-            // Abre a janela de detalhes do caixa, passando o número do caixa
             home h = new home();
             h.setVisible(true);
             dispose();
@@ -118,23 +119,97 @@ public final class Caixa extends javax.swing.JFrame {
     }
 
     private void configurarAtalho() {
-        // Define o atalho Alt+A
+        // Atalho Alt+A para adicionar caixa
         KeyStroke keyStroke = KeyStroke.getKeyStroke("alt A");
-
-        // Mapeia a ação "abrirJanela" para o atalho Alt+A
         getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(keyStroke, "abrirJanela");
         getRootPane().getActionMap().put("abrirJanela", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                abrirJanela();  // Chama a função para abrir a nova janela
+                abrirJanCaixa();
+            }
+        });
+
+        // Atalho Alt+E para fechar caixa
+        KeyStroke keyStrokeClose = KeyStroke.getKeyStroke("alt E");
+        getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(keyStrokeClose, "fecharCaixa");
+        getRootPane().getActionMap().put("fecharCaixa", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                fecharCaixa();
             }
         });
     }
 
-    private void abrirJanela() {
-        // Substitua DetalhesCaixaWindow pela sua janela
-        home h = new home();
-        h.setVisible(true);
+    private void abrirJanCaixa() {
+        JFrame addCaixaFrame = new addCaixa();
+        addCaixaFrame.setVisible(true);
+        addCaixaFrame.setLocationRelativeTo(null);
+        addCaixaFrame.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+    }
+
+    private void fecharCaixa() {
+        int selectedRow = jTable1.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Por favor, selecione um caixa para fechar.");
+            return;
+        }
+
+        int idCaixaSelecionado = (int) tabelaCaixas.getValueAt(selectedRow, 0);
+        Connection conn = Database.getConnection();
+
+        if (conn == null) {
+            JOptionPane.showMessageDialog(this, "Erro ao conectar ao banco de dados. Verifique a conexão.");
+            return;
+        }
+
+        PreparedStatement stmt = null;
+
+        try {
+            String sqlSelect = "SELECT id_funcionario, nome_funcionario, abertura FROM caixa WHERE id_caixa = ?";
+            stmt = conn.prepareStatement(sqlSelect);
+            stmt.setInt(1, idCaixaSelecionado);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                int idFuncionario = rs.getInt("id_funcionario");
+                String nomeFunc = rs.getString("nome_funcionario");
+                Timestamp horaAbertura = rs.getTimestamp("abertura");
+                Timestamp horaFechamento = new Timestamp(System.currentTimeMillis());
+
+                // Atualizar o banco de dados para fechar o caixa
+                String sqlUpdate = "UPDATE caixa SET aberto = ?, fechamento = ? WHERE id_caixa = ?";
+                stmt = conn.prepareStatement(sqlUpdate);
+                stmt.setBoolean(1, false);
+                stmt.setTimestamp(2, horaFechamento);
+                stmt.setInt(3, idCaixaSelecionado);
+
+                int rowsUpdated = stmt.executeUpdate();
+                if (rowsUpdated > 0) {
+                    tabelaCaixas.setValueAt("Não", selectedRow, tabelaCaixas.findColumn("aberto"));
+                    JOptionPane.showMessageDialog(this, "Caixa fechado com sucesso.\nFuncionário: " + nomeFunc
+                            + "\nHora de abertura: " + horaAbertura + "\nHora de fechamento: " + horaFechamento);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Erro ao fechar o caixa.");
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Caixa não encontrado.");
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Erro ao executar a operação no banco de dados.");
+        } finally {
+            try {
+                if (stmt != null) {
+                    stmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     /**
@@ -151,6 +226,10 @@ public final class Caixa extends javax.swing.JFrame {
         jTable1 = new javax.swing.JTable();
         jPanel1 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
+        jMenuBar1 = new javax.swing.JMenuBar();
+        jMenu1 = new javax.swing.JMenu();
+        novoCaixaIt = new javax.swing.JMenuItem();
+        fecharCaixaIt = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setIconImage((new javax.swing.ImageIcon(getClass().getResource("/pizza.png"))).getImage());
@@ -182,22 +261,41 @@ public final class Caixa extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
+        jMenu1.setText("Ações");
+
+        novoCaixaIt.setText("Novo Caixa");
+        novoCaixaIt.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                novoCaixaItActionPerformed(evt);
+            }
+        });
+        jMenu1.add(novoCaixaIt);
+
+        fecharCaixaIt.setText("Fechar Caixa");
+        fecharCaixaIt.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                fecharCaixaItActionPerformed(evt);
+            }
+        });
+        jMenu1.add(fecharCaixaIt);
+
+        jMenuBar1.add(jMenu1);
+
+        setJMenuBar(jMenuBar1);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
+                .addGap(60, 60, 60)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(209, 209, 209)
+                        .addGap(149, 149, 149)
                         .addComponent(jLabel1))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(60, 60, 60)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(0, 0, Short.MAX_VALUE)))))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(60, 60, 60))
         );
         layout.setVerticalGroup(
@@ -209,11 +307,19 @@ public final class Caixa extends javax.swing.JFrame {
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(20, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void novoCaixaItActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_novoCaixaItActionPerformed
+        abrirJanCaixa();
+    }//GEN-LAST:event_novoCaixaItActionPerformed
+
+    private void fecharCaixaItActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fecharCaixaItActionPerformed
+        fecharCaixa();
+    }//GEN-LAST:event_fecharCaixaItActionPerformed
 
     /**
      * @param args the command line arguments
@@ -226,16 +332,20 @@ public final class Caixa extends javax.swing.JFrame {
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(() -> {
-            new Caixa().setVisible(true); 
+            new Caixa().setVisible(true);
             //new home().setVisible(true); 
         });
     }
-    
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JMenuItem fecharCaixaIt;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JMenu jMenu1;
+    private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
+    private javax.swing.JMenuItem novoCaixaIt;
     // End of variables declaration//GEN-END:variables
 }

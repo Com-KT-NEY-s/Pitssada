@@ -39,6 +39,14 @@ public class home extends javax.swing.JFrame {
         listaPedidos();
         setKeyboardShortcuts();
 
+        // Configura o comportamento de confirmação ao fechar a janela
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                confirmarFechamento();
+            }
+        });
+
         fazP.setText("Fazer Pedido");
         fazP.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, InputEvent.ALT_DOWN_MASK));
 
@@ -118,6 +126,26 @@ public class home extends javax.swing.JFrame {
             }
         }
         super.dispose();
+    }
+
+    private void confirmarFechamento() {
+        int resposta = JOptionPane.showConfirmDialog(
+                this,
+                "Tem certeza que deseja sair?",
+                "Confirmação de Saída",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE
+        );
+
+        if (resposta == JOptionPane.YES_OPTION) {
+            // Abre a janela Caixa
+            JFrame caixa = new Caixa();
+            caixa.setVisible(true);
+            caixa.setLocationRelativeTo(null);
+
+            // Fecha a janela 'home' somente após abrir 'Caixa'
+            dispose();
+        }
     }
 
     private void setKeyboardShortcuts() {
@@ -254,12 +282,11 @@ public class home extends javax.swing.JFrame {
 
         try {
             String sql = "SELECT id_pedido, sabor, tamanho, bebida, nomeCliente, rua, bairro, numero, hora, precoFinal FROM pedido WHERE id_caixa = ?";
-            
+
             stmt = conn.prepareStatement(sql);
-            
+
             stmt.setInt(1, Caixa.getIDCaixa());
             rs = stmt.executeQuery();
-            
 
             // Limpa a tabela antes de adicionar novos dados
             tabelaPedidos.setRowCount(0);
