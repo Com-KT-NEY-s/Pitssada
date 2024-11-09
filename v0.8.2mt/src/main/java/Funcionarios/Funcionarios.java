@@ -65,7 +65,7 @@ public class Funcionarios extends javax.swing.JFrame {
     }
 
     private void excluirFuncionario() {
-        int selectedRow = jTable1.getSelectedRow();
+        int selectedRow = JTfuncionarios.getSelectedRow();
 
         // Verifica se uma linha foi selecionada
         if (selectedRow == -1) {
@@ -114,7 +114,7 @@ public class Funcionarios extends javax.swing.JFrame {
     }
 
     private void configurarDelecaoPorTeclaDelete() {
-        jTable1.addKeyListener(new java.awt.event.KeyAdapter() {
+        JTfuncionarios.addKeyListener(new java.awt.event.KeyAdapter() {
             @Override
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 if (evt.getKeyCode() == java.awt.event.KeyEvent.VK_DELETE) {
@@ -134,7 +134,7 @@ public class Funcionarios extends javax.swing.JFrame {
     private void initComponents() {
 
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        JTfuncionarios = new javax.swing.JTable();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
@@ -142,8 +142,8 @@ public class Funcionarios extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jTable1.setModel(tabelaFuncionarios);
-        jScrollPane1.setViewportView(jTable1);
+        JTfuncionarios.setModel(tabelaFuncionarios);
+        jScrollPane1.setViewportView(JTfuncionarios);
 
         jMenu1.setText("Gerenciar");
 
@@ -213,11 +213,11 @@ public class Funcionarios extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTable JTfuncionarios;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
     // End of variables declaration//GEN-END:variables
 }

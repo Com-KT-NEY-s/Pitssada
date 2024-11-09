@@ -15,6 +15,7 @@ Cardapio\addTamanho$5.class
 Cardapio\addBebida$5.class
 Inicio\home$5.class
 Inicio\home$11.class
+Caixa\Caixa$12.class
 Cardapio\JCardapio$3.class
 Inicio\home$8.class
 Cardapio\addTamanho$2.class
@@ -43,6 +44,7 @@ Cardapio\JCardapio$4.class
 Cardapio\addTamanho.class
 Pedido\IntPizza$1.class
 Inicio\home.class
+Caixa\Caixa$13.class
 Cardapio\addSabor$3.class
 Funcionarios\Funcionarios$1.class
 Cardapio\Cardapio.class

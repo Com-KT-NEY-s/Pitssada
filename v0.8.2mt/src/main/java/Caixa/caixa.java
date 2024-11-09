@@ -27,6 +27,7 @@ public class Caixa extends javax.swing.JFrame {
     };
 
     private static int id_caixa;
+
     public static int getIDCaixa() {
         return id_caixa;
     }
@@ -51,6 +52,7 @@ public class Caixa extends javax.swing.JFrame {
         listaCaixas();
         configurarAtalho();
         addEventListeners();
+        configurarDelecaoPorTeclaDelete();
     }
 
     public void verificaConexao(boolean isConnected) {
@@ -114,7 +116,7 @@ public class Caixa extends javax.swing.JFrame {
 
     private void addEventListeners() {
         // Ouvinte para clique duplo na tabela
-        jTable1.addMouseListener(new MouseAdapter() {
+        JTcaixas.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 2) {
@@ -124,7 +126,7 @@ public class Caixa extends javax.swing.JFrame {
         });
 
         // Ouvinte para tecla Enter
-        jTable1.addKeyListener(new KeyAdapter() {
+        JTcaixas.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
@@ -135,7 +137,7 @@ public class Caixa extends javax.swing.JFrame {
     }
 
     private void abrirDetalhesCaixa() {
-        int selectedRow = jTable1.getSelectedRow();
+        int selectedRow = JTcaixas.getSelectedRow();
         if (selectedRow != -1) {
             id_caixa = (int) tabelaCaixas.getValueAt(selectedRow, 0);
             home h = new home();
@@ -164,7 +166,7 @@ public class Caixa extends javax.swing.JFrame {
                 fecharCaixa();
             }
         });
-        
+
         // Atalho Alt+E para fechar caixa
         KeyStroke keyStrokeOpenFuncionarios = KeyStroke.getKeyStroke("alt G");
         getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(keyStrokeOpenFuncionarios, "abrirFunc");
@@ -174,7 +176,7 @@ public class Caixa extends javax.swing.JFrame {
                 abrirJanFunc();
             }
         });
-        
+
         // Atalho Alt+E para fechar caixa
         KeyStroke keyStrokeAddFuncionarios = KeyStroke.getKeyStroke("alt F");
         getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(keyStrokeAddFuncionarios, "addFunc");
@@ -191,6 +193,14 @@ public class Caixa extends javax.swing.JFrame {
         addCaixaFrame.setVisible(true);
         addCaixaFrame.setLocationRelativeTo(null);
         addCaixaFrame.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+
+        // Adiciona um ouvinte para recarregar a tabela quando a janela é fechada
+        addCaixaFrame.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosed(java.awt.event.WindowEvent e) {
+                listaCaixas(); // Recarrega a tabela ao fechar a janela de adição de caixa
+            }
+        });
     }
 
     private void abrirJanFunc() {
@@ -199,16 +209,16 @@ public class Caixa extends javax.swing.JFrame {
         addCaixaFrame.setLocationRelativeTo(null);
         addCaixaFrame.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     }
-    
+
     private void abrirAddFunc() {
         JFrame addCaixaFrame = new addFuncionarios();
         addCaixaFrame.setVisible(true);
         addCaixaFrame.setLocationRelativeTo(null);
         addCaixaFrame.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     }
-    
+
     private void fecharCaixa() {
-        int selectedRow = jTable1.getSelectedRow();
+        int selectedRow = JTcaixas.getSelectedRow();
         if (selectedRow == -1) {
             JOptionPane.showMessageDialog(this, "Por favor, selecione um caixa para fechar.");
             return;
@@ -272,6 +282,68 @@ public class Caixa extends javax.swing.JFrame {
         }
     }
 
+    private void configurarDelecaoPorTeclaDelete() {
+        JTcaixas.addKeyListener(new java.awt.event.KeyAdapter() {
+            @Override
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                if (evt.getKeyCode() == java.awt.event.KeyEvent.VK_DELETE) {
+                    excluirCaixa();  // Chama a função de exclusão
+                }
+            }
+        });
+    }
+
+    private void excluirCaixa() {
+        int selectedRow = JTcaixas.getSelectedRow();
+
+        // Verifica se uma linha foi selecionada
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Por favor, selecione um caixa para excluir.");
+            return;
+        }
+
+        // Confirmação antes de excluir
+        int confirm = JOptionPane.showConfirmDialog(this, "Tem certeza que deseja excluir este caixa?",
+                "Confirmar Exclusão", JOptionPane.YES_NO_OPTION);
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            int idCaixa = (int) JTcaixas.getValueAt(selectedRow, 0); // ID do caixa
+
+            Connection conn = null;
+            PreparedStatement stmt = null;
+
+            try {
+                conn = Database.getConnection();
+                String sql = "DELETE FROM caixa WHERE id_caixa = ?";
+                stmt = conn.prepareStatement(sql);
+                stmt.setInt(1, idCaixa);
+
+                int rowsAffected = stmt.executeUpdate();
+                if (rowsAffected > 0) {
+                    JOptionPane.showMessageDialog(this, "Caixa excluído com sucesso.");
+                    listaCaixas(); // Atualiza a tabela após exclusão
+                } else {
+                    JOptionPane.showMessageDialog(this, "Erro ao excluir o caixa.");
+                }
+
+            } catch (SQLException e) {
+                JOptionPane.showMessageDialog(this, "Erro ao excluir o caixa: " + e.getMessage());
+                e.printStackTrace();
+            } finally {
+                try {
+                    if (stmt != null) {
+                        stmt.close();
+                    }
+                    if (conn != null) {
+                        conn.close();
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -285,7 +357,7 @@ public class Caixa extends javax.swing.JFrame {
         jMenuItem2 = new javax.swing.JMenuItem();
         jLabel1 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        JTcaixas = new javax.swing.JTable();
         connPanel = new javax.swing.JPanel();
         msgPanel = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
@@ -306,8 +378,8 @@ public class Caixa extends javax.swing.JFrame {
         jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jLabel1.setText("Selecione um caixa");
 
-        jTable1.setModel(tabelaCaixas);
-        jScrollPane1.setViewportView(jTable1);
+        JTcaixas.setModel(tabelaCaixas);
+        jScrollPane1.setViewportView(JTcaixas);
 
         connPanel.setBackground(new java.awt.Color(204, 204, 204));
 
@@ -434,6 +506,7 @@ public class Caixa extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTable JTcaixas;
     private javax.swing.JMenu acoesMenu;
     private javax.swing.JPanel connPanel;
     private javax.swing.JMenuItem fecharCaixaIt;
@@ -444,7 +517,6 @@ public class Caixa extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
     private javax.swing.JLabel msgPanel;
     private javax.swing.JMenuItem novoCaixaIt;
     private javax.swing.JMenuItem novoFuncBtn;
