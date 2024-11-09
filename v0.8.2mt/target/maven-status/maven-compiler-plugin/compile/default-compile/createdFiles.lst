@@ -6,6 +6,7 @@ Caixa\Caixa$6.class
 Caixa\Caixa.class
 Caixa\Caixa$3.class
 Cardapio\JCardapio$8$1.class
+Funcionarios\addFuncionarios.class
 Cardapio\addSabor$5.class
 Cardapio\JCardapio$5.class
 Inicio\home$2.class
@@ -20,9 +21,11 @@ Cardapio\addBebida$2.class
 Cardapio\addSabor.class
 Caixa\Caixa$2.class
 Cardapio\JCardapio.class
+Funcionarios\addFuncionarios$1.class
 Cardapio\addBebida$6.class
 Inicio\home$4.class
 Pedido\IntPizza$2.class
+Caixa\Caixa$9.class
 Cardapio\JCardapio$10.class
 Cardapio\addSabor$4.class
 Cardapio\JCardapio$6.class
@@ -43,6 +46,7 @@ Funcionarios\Funcionarios$1.class
 Cardapio\Cardapio.class
 Cardapio\JCardapio$11.class
 Caixa\Caixa$5.class
+Caixa\Caixa$8.class
 Cardapio\JCardapio$9$1.class
 Caixa\addCaixa$2.class
 Inicio\home$6.class

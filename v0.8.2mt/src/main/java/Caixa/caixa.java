@@ -1,6 +1,8 @@
 package Caixa;
 
 import DB.Database;
+import Funcionarios.Funcionarios;
+import Funcionarios.addFuncionarios;
 import Inicio.home;
 import com.formdev.flatlaf.FlatLightLaf;
 import java.awt.Color;
@@ -171,6 +173,20 @@ public class Caixa extends javax.swing.JFrame {
         addCaixaFrame.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     }
 
+    private void abrirJanFunc() {
+        JFrame addCaixaFrame = new Funcionarios();
+        addCaixaFrame.setVisible(true);
+        addCaixaFrame.setLocationRelativeTo(null);
+        addCaixaFrame.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+    }
+    
+    private void abrirAddFunc() {
+        JFrame addCaixaFrame = new addFuncionarios();
+        addCaixaFrame.setVisible(true);
+        addCaixaFrame.setLocationRelativeTo(null);
+        addCaixaFrame.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+    }
+    
     private void fecharCaixa() {
         int selectedRow = jTable1.getSelectedRow();
         if (selectedRow == -1) {
@@ -245,15 +261,24 @@ public class Caixa extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jMenuItem1 = new javax.swing.JMenuItem();
+        jMenuItem2 = new javax.swing.JMenuItem();
         jLabel1 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
         connPanel = new javax.swing.JPanel();
         msgPanel = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
-        jMenu1 = new javax.swing.JMenu();
+        acoesMenu = new javax.swing.JMenu();
         novoCaixaIt = new javax.swing.JMenuItem();
         fecharCaixaIt = new javax.swing.JMenuItem();
+        funcionariosMenu = new javax.swing.JMenu();
+        gerenciarFuncBtn = new javax.swing.JMenuItem();
+        novoFuncBtn = new javax.swing.JMenuItem();
+
+        jMenuItem1.setText("jMenuItem1");
+
+        jMenuItem2.setText("jMenuItem2");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setIconImage((new javax.swing.ImageIcon(getClass().getResource("/pizza.png"))).getImage());
@@ -285,7 +310,7 @@ public class Caixa extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
-        jMenu1.setText("Ações");
+        acoesMenu.setText("Ações");
 
         novoCaixaIt.setText("Novo Caixa");
         novoCaixaIt.addActionListener(new java.awt.event.ActionListener() {
@@ -293,7 +318,7 @@ public class Caixa extends javax.swing.JFrame {
                 novoCaixaItActionPerformed(evt);
             }
         });
-        jMenu1.add(novoCaixaIt);
+        acoesMenu.add(novoCaixaIt);
 
         fecharCaixaIt.setText("Fechar Caixa");
         fecharCaixaIt.addActionListener(new java.awt.event.ActionListener() {
@@ -301,9 +326,29 @@ public class Caixa extends javax.swing.JFrame {
                 fecharCaixaItActionPerformed(evt);
             }
         });
-        jMenu1.add(fecharCaixaIt);
+        acoesMenu.add(fecharCaixaIt);
 
-        jMenuBar1.add(jMenu1);
+        jMenuBar1.add(acoesMenu);
+
+        funcionariosMenu.setText("Funcionários");
+
+        gerenciarFuncBtn.setText("Gerenciar");
+        gerenciarFuncBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                gerenciarFuncBtnActionPerformed(evt);
+            }
+        });
+        funcionariosMenu.add(gerenciarFuncBtn);
+
+        novoFuncBtn.setText("Novo Funcionário");
+        novoFuncBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                novoFuncBtnActionPerformed(evt);
+            }
+        });
+        funcionariosMenu.add(novoFuncBtn);
+
+        jMenuBar1.add(funcionariosMenu);
 
         setJMenuBar(jMenuBar1);
 
@@ -345,6 +390,14 @@ public class Caixa extends javax.swing.JFrame {
         fecharCaixa();
     }//GEN-LAST:event_fecharCaixaItActionPerformed
 
+    private void gerenciarFuncBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_gerenciarFuncBtnActionPerformed
+        abrirJanFunc();
+    }//GEN-LAST:event_gerenciarFuncBtnActionPerformed
+
+    private void novoFuncBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_novoFuncBtnActionPerformed
+        abrirAddFunc();
+    }//GEN-LAST:event_novoFuncBtnActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -361,14 +414,19 @@ public class Caixa extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JMenu acoesMenu;
     private javax.swing.JPanel connPanel;
     private javax.swing.JMenuItem fecharCaixaIt;
+    private javax.swing.JMenu funcionariosMenu;
+    private javax.swing.JMenuItem gerenciarFuncBtn;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JMenu jMenu1;
     private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
     private javax.swing.JLabel msgPanel;
     private javax.swing.JMenuItem novoCaixaIt;
+    private javax.swing.JMenuItem novoFuncBtn;
     // End of variables declaration//GEN-END:variables
 }
