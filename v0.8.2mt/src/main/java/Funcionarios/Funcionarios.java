@@ -1,13 +1,68 @@
 package Funcionarios;
 
+import Caixa.Caixa;
+import DB.Database;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import javax.swing.table.DefaultTableModel;
 
 public class Funcionarios extends javax.swing.JFrame {
-    
-    private DefaultTableModel tabelaFuncionarios = new DefaultTableModel(new Object[]{"ID", "Nome" , "CPF", "Idade"}, 0);
+
+    private DefaultTableModel tabelaFuncionarios = new DefaultTableModel(new Object[]{"ID", "Nome", "CPF", "Idade"}, 0);
 
     public Funcionarios() {
         initComponents();
+        listaFuncionarios();
+    }
+
+    private static int id_funcionario;
+
+    public static int getIDFuncionario() {
+        return id_funcionario;
+    }
+
+    public void listaFuncionarios() {
+        Connection conn = Database.getConnection();
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        try {
+            String sql = "SELECT id_funcionario, nome_funcionario, cpf, idade FROM funcionarios";
+            stmt = conn.prepareStatement(sql);
+            rs = stmt.executeQuery();
+
+            // Limpa a tabela antes de adicionar novos dados
+            tabelaFuncionarios.setRowCount(0);
+
+            while (rs.next()) {
+                // Recupera os dados do funcionário e adiciona à tabela
+                Object[] row = {
+                    rs.getInt("id_funcionario"), // ID
+                    rs.getString("nome_funcionario"), // Nome
+                    rs.getString("cpf"), // CPF
+                    rs.getInt("idade") // Idade
+                };
+                tabelaFuncionarios.addRow(row);  // Adiciona cada linha à tabela
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (stmt != null) {
+                    stmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     /**
@@ -28,17 +83,7 @@ public class Funcionarios extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
-            }
-        ));
+        jTable1.setModel(tabelaFuncionarios);
         jScrollPane1.setViewportView(jTable1);
 
         jMenu1.setText("Gerenciar");
