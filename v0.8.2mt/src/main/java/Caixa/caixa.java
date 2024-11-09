@@ -3,6 +3,7 @@ package Caixa;
 import DB.Database;
 import Inicio.home;
 import com.formdev.flatlaf.FlatLightLaf;
+import java.awt.Color;
 import java.awt.event.*;
 import java.sql.*;
 import javax.swing.AbstractAction;
@@ -14,33 +15,56 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.table.DefaultTableModel;
 
-public final class Caixa extends javax.swing.JFrame {
+public class Caixa extends javax.swing.JFrame {
 
     private DefaultTableModel tabelaCaixas = new DefaultTableModel(new Object[]{"Caixa", "Funcionário", "Aberto"}, 0) {
         @Override
         public boolean isCellEditable(int row, int column) {
-            return false;  // Torna todas as células não editáveis
+            return false;
         }
     };
 
     private static int id_caixa;
-
     public static int getIDCaixa() {
         return id_caixa;
     }
 
-    /**
-     * Creates new form caixa
-     */
     public Caixa() {
         initComponents();
         setLocationRelativeTo(null);
+
+        // Verifica o estado da conexão ao iniciar
+        Connection conn = Database.getConnection();
+        boolean isConnected = (conn != null);
+        verificaConexao(isConnected);
+
+        if (conn != null) {
+            try {
+                conn.close(); // Fecha a conexão após o teste
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        }
+
         listaCaixas();
-
         configurarAtalho();
-
-        // Adiciona ouvintes para clique duplo e tecla Enter
         addEventListeners();
+    }
+
+    public void verificaConexao(boolean isConnected) {
+        Color white = new Color(255, 255, 255);
+        Color lightBlue = new Color(0, 153, 255);
+        Color red = new Color(255, 0, 0);
+
+        if (isConnected) {
+            connPanel.setBackground(lightBlue);
+            msgPanel.setText("A conexão com o banco está funcionando corretamente! Ao trabalho.");
+            msgPanel.setForeground(white);
+        } else {
+            connPanel.setBackground(red);
+            msgPanel.setText("Você não está conectado ao servidor! Os recursos do sistema não funcionarão corretamente.");
+            msgPanel.setForeground(white);
+        }
     }
 
     public void listaCaixas() {
@@ -224,8 +248,8 @@ public final class Caixa extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
-        jPanel1 = new javax.swing.JPanel();
-        jLabel2 = new javax.swing.JLabel();
+        connPanel = new javax.swing.JPanel();
+        msgPanel = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         novoCaixaIt = new javax.swing.JMenuItem();
@@ -240,24 +264,24 @@ public final class Caixa extends javax.swing.JFrame {
         jTable1.setModel(tabelaCaixas);
         jScrollPane1.setViewportView(jTable1);
 
-        jPanel1.setBackground(new java.awt.Color(204, 204, 204));
+        connPanel.setBackground(new java.awt.Color(204, 204, 204));
 
-        jLabel2.setText("Você não deveria estar aqui....");
+        msgPanel.setText("Você não deveria estar aqui....");
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
+        javax.swing.GroupLayout connPanelLayout = new javax.swing.GroupLayout(connPanel);
+        connPanel.setLayout(connPanelLayout);
+        connPanelLayout.setHorizontalGroup(
+            connPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(connPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel2)
+                .addComponent(msgPanel)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+        connPanelLayout.setVerticalGroup(
+            connPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, connPanelLayout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel2)
+                .addComponent(msgPanel)
                 .addContainerGap())
         );
 
@@ -294,7 +318,7 @@ public final class Caixa extends javax.swing.JFrame {
                         .addGap(149, 149, 149)
                         .addComponent(jLabel1))
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(connPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(60, 60, 60))
         );
@@ -306,7 +330,7 @@ public final class Caixa extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(connPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(20, Short.MAX_VALUE))
         );
 
@@ -333,19 +357,18 @@ public final class Caixa extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(() -> {
             new Caixa().setVisible(true);
-            //new home().setVisible(true); 
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel connPanel;
     private javax.swing.JMenuItem fecharCaixaIt;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenuBar jMenuBar1;
-    private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
+    private javax.swing.JLabel msgPanel;
     private javax.swing.JMenuItem novoCaixaIt;
     // End of variables declaration//GEN-END:variables
 }

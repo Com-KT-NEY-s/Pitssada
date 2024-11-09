@@ -1,19 +1,16 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package Caixa;
 
-/**
- *
- * @author GUILHERMEMATHIACK
- */
+import DB.Database;
+import javax.swing.*;
+import java.sql.*;
+
 public class addCaixa extends javax.swing.JFrame {
 
-    /**
-     * Creates new form addCaixa
-     */
     public addCaixa() {
+        setTitle("Adicionar Caixa");
+        setSize(300, 200);
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         initComponents();
     }
 
@@ -27,8 +24,8 @@ public class addCaixa extends javax.swing.JFrame {
     private void initComponents() {
 
         jLabel1 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
-        jTextField3 = new javax.swing.JTextField();
+        nomeFuncionarioJtx = new javax.swing.JTextField();
+        nCaixaJtx = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
@@ -38,9 +35,9 @@ public class addCaixa extends javax.swing.JFrame {
         jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         jLabel1.setText("Novo Caixa");
 
-        jTextField1.addActionListener(new java.awt.event.ActionListener() {
+        nomeFuncionarioJtx.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField1ActionPerformed(evt);
+                nomeFuncionarioJtxActionPerformed(evt);
             }
         });
 
@@ -66,10 +63,10 @@ public class addCaixa extends javax.swing.JFrame {
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                         .addComponent(jLabel2)
-                                        .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, 194, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addComponent(nCaixaJtx, javax.swing.GroupLayout.PREFERRED_SIZE, 194, javax.swing.GroupLayout.PREFERRED_SIZE))
                                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                         .addComponent(jLabel3)
-                                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 194, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                                        .addComponent(nomeFuncionarioJtx, javax.swing.GroupLayout.PREFERRED_SIZE, 194, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                         .addGap(0, 24, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
@@ -84,11 +81,11 @@ public class addCaixa extends javax.swing.JFrame {
                 .addGap(74, 74, 74)
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(nCaixaJtx, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(33, 33, 33)
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(nomeFuncionarioJtx, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 85, Short.MAX_VALUE)
                 .addComponent(jButton1)
                 .addContainerGap())
@@ -97,9 +94,53 @@ public class addCaixa extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField1ActionPerformed
+    private void nomeFuncionarioJtxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nomeFuncionarioJtxActionPerformed
+        adicionarCaixa();
+    }//GEN-LAST:event_nomeFuncionarioJtxActionPerformed
+
+    private void adicionarCaixa() {
+        String nomeFuncionario = nomeFuncionarioJtx.getText().trim();
+        String numeroCaixaStr = nCaixaJtx.getText().trim();
+
+        if (nomeFuncionario.isEmpty() || numeroCaixaStr.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Por favor, preencha todos os campos.");
+            return;
+        }
+
+        int numeroCaixa;
+        try {
+            numeroCaixa = Integer.parseInt(numeroCaixaStr);
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Número do caixa deve ser um número válido.");
+            return;
+        }
+
+        Connection conn = Database.getConnection();
+        if (conn == null) {
+            System.out.println("null connection (AAAAAAAAAAAAAAAAAAAAAAA)");
+            JOptionPane.showMessageDialog(this, "Erro ao conectar ao banco de dados.");
+            return;
+        }
+
+        try (PreparedStatement stmt = conn.prepareStatement(
+                "INSERT INTO caixa (id_funcionario, caixa, nome_funcionario, abertura, aberto) VALUES (?, ?, ?, ?, ?)")) {
+
+            int idFuncionario = numeroCaixa; // Suponha que o número do caixa é o id do funcionário para este exemplo
+            stmt.setInt(1, idFuncionario);
+            stmt.setInt(2, numeroCaixa);
+            stmt.setString(3, nomeFuncionario);
+            stmt.setTimestamp(4, new Timestamp(System.currentTimeMillis()));
+            stmt.setBoolean(5, true);
+
+            stmt.executeUpdate();
+            JOptionPane.showMessageDialog(this, "Caixa adicionado com sucesso.");
+            dispose();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Erro ao adicionar o caixa ao banco de dados.");
+        }
+    }
 
     /**
      * @param args the command line arguments
@@ -141,7 +182,7 @@ public class addCaixa extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField3;
+    private javax.swing.JTextField nCaixaJtx;
+    private javax.swing.JTextField nomeFuncionarioJtx;
     // End of variables declaration//GEN-END:variables
 }

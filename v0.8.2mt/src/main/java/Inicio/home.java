@@ -35,6 +35,7 @@ public class home extends javax.swing.JFrame {
         super("Início");
         initComponents();
         setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // Evita que o programa finalize ao fechar 'home'
         setStyles();
         listaPedidos();
         setKeyboardShortcuts();
@@ -47,6 +48,7 @@ public class home extends javax.swing.JFrame {
             }
         });
 
+        // Resto da configuração inicial
         fazP.setText("Fazer Pedido");
         fazP.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, InputEvent.ALT_DOWN_MASK));
 
@@ -62,9 +64,7 @@ public class home extends javax.swing.JFrame {
         jMenuItem2.setText("Nova Bebida");
         jMenuItem2.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_B, InputEvent.ALT_DOWN_MASK));
 
-        // Inicializa o ExecutorService para a verificação de conexão com o banco
         startDatabaseConnectionChecker();
-
         initSearchField();
     }
 
@@ -143,7 +143,7 @@ public class home extends javax.swing.JFrame {
             caixa.setVisible(true);
             caixa.setLocationRelativeTo(null);
 
-            // Fecha a janela 'home' somente após abrir 'Caixa'
+            // Fecha somente a janela 'home'
             dispose();
         }
     }
