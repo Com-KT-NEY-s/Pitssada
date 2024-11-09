@@ -1,9 +1,18 @@
 package Funcionarios;
 
+import DB.Database;
+import com.formdev.flatlaf.json.ParseException;
+import java.sql.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.*;
+import javax.swing.text.MaskFormatter;
+
 public class addFuncionarios extends javax.swing.JFrame {
 
     public addFuncionarios() {
         initComponents();
+        formatarCampoCPF(cpfJtx);
     }
 
     /**
@@ -96,9 +105,80 @@ public class addFuncionarios extends javax.swing.JFrame {
         adicionarFuncionario();
     }//GEN-LAST:event_jButton1ActionPerformed
 
-    public void adicionarFuncionario() {
-        
+    private void adicionarFuncionario() {
+        String nome = nomeJtx.getText().trim();
+        String cpf = cpfJtx.getText().trim();
+        String idadeStr = idadeJtx.getText().trim();
+
+        // Verifica se todos os campos estão preenchidos
+        if (nome.isEmpty() || cpf.isEmpty() || idadeStr.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Por favor, preencha todos os campos.");
+            return;
+        }
+
+        int idade;
+        try {
+            idade = Integer.parseInt(idadeStr);
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Idade deve ser um número válido.");
+            return;
+        }
+
+        Connection conn = Database.getConnection();
+        if (conn == null) {
+            JOptionPane.showMessageDialog(this, "Erro ao conectar ao banco de dados.");
+            return;
+        }
+
+        // Inserir o funcionário no banco de dados
+        try (PreparedStatement stmt = conn.prepareStatement(
+                "INSERT INTO funcionarios (nome_funcionario, cpf, idade) VALUES (?, ?, ?)")) {
+
+            stmt.setString(1, nome);
+            stmt.setString(2, cpf);
+            stmt.setInt(3, idade);
+
+            stmt.executeUpdate();
+            JOptionPane.showMessageDialog(this, "Funcionário adicionado com sucesso.");
+            dispose();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Erro ao adicionar o funcionário ao banco de dados.");
+        }
     }
+
+    private void formatarCampoCPF(JTextField campo) {
+        try {
+            MaskFormatter cpfMask = new MaskFormatter("###.###.###-##");
+            cpfMask.setPlaceholderCharacter('_');
+
+            // Criamos um JFormattedTextField temporário com a máscara
+            JFormattedTextField formattedField = new JFormattedTextField(cpfMask);
+            formattedField.setText(campo.getText());  // Copia o texto existente (se houver)
+
+            // Substituímos o campo original pelo campo formatado
+            formattedField.setColumns(campo.getColumns());
+            formattedField.setBounds(campo.getBounds());
+            formattedField.setFont(campo.getFont());
+
+            // Remove o JTextField atual e adiciona o JFormattedTextField formatado no seu lugar
+            getContentPane().remove(campo);
+            getContentPane().add(formattedField);
+            getContentPane().revalidate();
+            getContentPane().repaint();
+
+            // Atualiza a referência para o novo campo formatado
+            this.cpfJtx = formattedField;
+
+        } catch (ParseException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Erro ao aplicar formatação ao CPF.");
+        } catch (java.text.ParseException ex) {
+            Logger.getLogger(addFuncionarios.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
     /**
      * @param args the command line arguments
      */

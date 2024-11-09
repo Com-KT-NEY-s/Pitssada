@@ -1,6 +1,10 @@
 package Funcionarios;
 
+import javax.swing.table.DefaultTableModel;
+
 public class Funcionarios extends javax.swing.JFrame {
+    
+    private DefaultTableModel tabelaFuncionarios = new DefaultTableModel(new Object[]{"ID", "Nome" , "CPF", "Idade"}, 0);
 
     public Funcionarios() {
         initComponents();
