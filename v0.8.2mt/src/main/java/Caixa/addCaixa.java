@@ -3,8 +3,12 @@ package Caixa;
 import DB.Database;
 import javax.swing.*;
 import java.sql.*;
+import java.util.*;
 
 public class addCaixa extends javax.swing.JFrame {
+
+    // Mapa para armazenar o id_funcionario de cada funcionário pelo nome
+    private Map<String, Integer> funcionariosMap = new HashMap<>();
 
     public addCaixa() {
         setTitle("Adicionar Caixa");
@@ -12,6 +16,7 @@ public class addCaixa extends javax.swing.JFrame {
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         initComponents();
+        carregarFuncionarios();
     }
 
     /**
@@ -24,28 +29,29 @@ public class addCaixa extends javax.swing.JFrame {
     private void initComponents() {
 
         jLabel1 = new javax.swing.JLabel();
-        nomeFuncionarioJtx = new javax.swing.JTextField();
         nCaixaJtx = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
+        addCaixaBtn = new javax.swing.JButton();
+        funcionariosCombo = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         jLabel1.setText("Novo Caixa");
 
-        nomeFuncionarioJtx.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                nomeFuncionarioJtxActionPerformed(evt);
-            }
-        });
-
         jLabel2.setText("Número do Caixa");
 
         jLabel3.setText("Funcionário");
 
-        jButton1.setText("Adicionar");
+        addCaixaBtn.setText("Adicionar");
+        addCaixaBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addCaixaBtnActionPerformed(evt);
+            }
+        });
+
+        funcionariosCombo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -63,14 +69,16 @@ public class addCaixa extends javax.swing.JFrame {
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                         .addComponent(jLabel2)
-                                        .addComponent(nCaixaJtx, javax.swing.GroupLayout.PREFERRED_SIZE, 194, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(jLabel3)
-                                        .addComponent(nomeFuncionarioJtx, javax.swing.GroupLayout.PREFERRED_SIZE, 194, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                        .addGap(0, 24, Short.MAX_VALUE))
+                                        .addComponent(nCaixaJtx, javax.swing.GroupLayout.PREFERRED_SIZE, 195, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(funcionariosCombo, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(jLabel3))
+                                        .addGap(4, 4, 4)))))
+                        .addGap(0, 39, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jButton1)))
+                        .addComponent(addCaixaBtn)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -84,25 +92,71 @@ public class addCaixa extends javax.swing.JFrame {
                 .addComponent(nCaixaJtx, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(33, 33, 33)
                 .addComponent(jLabel3)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(nomeFuncionarioJtx, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 85, Short.MAX_VALUE)
-                .addComponent(jButton1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(funcionariosCombo, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 74, Short.MAX_VALUE)
+                .addComponent(addCaixaBtn)
                 .addContainerGap())
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void nomeFuncionarioJtxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nomeFuncionarioJtxActionPerformed
+    private void addCaixaBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addCaixaBtnActionPerformed
         adicionarCaixa();
-    }//GEN-LAST:event_nomeFuncionarioJtxActionPerformed
+    }//GEN-LAST:event_addCaixaBtnActionPerformed
+
+    private void carregarFuncionarios() {
+        Connection conn = Database.getConnection();
+        if (conn == null) {
+            JOptionPane.showMessageDialog(this, "Erro ao conectar ao banco de dados.");
+            return;
+        }
+
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        try {
+            String sql = "SELECT id_funcionario, nome_funcionario FROM funcionarios";
+            stmt = conn.prepareStatement(sql);
+            rs = stmt.executeQuery();
+
+            funcionariosCombo.removeAllItems(); // Limpa o ComboBox antes de adicionar
+
+            while (rs.next()) {
+                int idFuncionario = rs.getInt("id_funcionario");
+                String nomeFuncionario = rs.getString("nome_funcionario");
+
+                // Adiciona o nome no ComboBox e armazena o ID no mapa
+                funcionariosCombo.addItem(nomeFuncionario);
+                funcionariosMap.put(nomeFuncionario, idFuncionario);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Erro ao carregar funcionários.");
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (stmt != null) {
+                    stmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
     private void adicionarCaixa() {
-        String nomeFuncionario = nomeFuncionarioJtx.getText().trim();
         String numeroCaixaStr = nCaixaJtx.getText().trim();
+        String nomeFuncionario = (String) funcionariosCombo.getSelectedItem();
 
-        if (nomeFuncionario.isEmpty() || numeroCaixaStr.isEmpty()) {
+        if (nomeFuncionario == null || numeroCaixaStr.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Por favor, preencha todos os campos.");
             return;
         }
@@ -115,9 +169,10 @@ public class addCaixa extends javax.swing.JFrame {
             return;
         }
 
+        int idFuncionario = funcionariosMap.get(nomeFuncionario); // Obtém o ID do funcionário selecionado
+
         Connection conn = Database.getConnection();
         if (conn == null) {
-            System.out.println("null connection (AAAAAAAAAAAAAAAAAAAAAAA)");
             JOptionPane.showMessageDialog(this, "Erro ao conectar ao banco de dados.");
             return;
         }
@@ -125,7 +180,6 @@ public class addCaixa extends javax.swing.JFrame {
         try (PreparedStatement stmt = conn.prepareStatement(
                 "INSERT INTO caixa (id_funcionario, caixa, nome_funcionario, abertura, aberto) VALUES (?, ?, ?, ?, ?)")) {
 
-            int idFuncionario = numeroCaixa; // Suponha que o número do caixa é o id do funcionário para este exemplo
             stmt.setInt(1, idFuncionario);
             stmt.setInt(2, numeroCaixa);
             stmt.setString(3, nomeFuncionario);
@@ -178,11 +232,11 @@ public class addCaixa extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
+    private javax.swing.JButton addCaixaBtn;
+    private javax.swing.JComboBox<String> funcionariosCombo;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JTextField nCaixaJtx;
-    private javax.swing.JTextField nomeFuncionarioJtx;
     // End of variables declaration//GEN-END:variables
 }
