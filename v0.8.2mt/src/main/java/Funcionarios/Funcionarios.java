@@ -1,10 +1,8 @@
 package Funcionarios;
 
-import Caixa.Caixa;
 import DB.Database;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import java.sql.*;
+import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
 public class Funcionarios extends javax.swing.JFrame {
@@ -14,6 +12,7 @@ public class Funcionarios extends javax.swing.JFrame {
     public Funcionarios() {
         initComponents();
         listaFuncionarios();
+        configurarDelecaoPorTeclaDelete();
     }
 
     private static int id_funcionario;
@@ -63,6 +62,66 @@ public class Funcionarios extends javax.swing.JFrame {
                 e.printStackTrace();
             }
         }
+    }
+
+    private void excluirFuncionario() {
+        int selectedRow = jTable1.getSelectedRow();
+
+        // Verifica se uma linha foi selecionada
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Por favor, selecione um funcionário para excluir.");
+            return;
+        }
+
+        // Confirmação antes de excluir
+        int confirm = JOptionPane.showConfirmDialog(this, "Tem certeza que deseja excluir este funcionário?",
+                "Confirmar Exclusão", JOptionPane.YES_NO_OPTION);
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            int idFuncionario = (int) tabelaFuncionarios.getValueAt(selectedRow, 0); // ID do funcionário
+
+            Connection conn = Database.getConnection();
+            PreparedStatement stmt = null;
+
+            try {
+                String sql = "DELETE FROM funcionarios WHERE id_funcionario = ?";
+                stmt = conn.prepareStatement(sql);
+                stmt.setInt(1, idFuncionario);
+
+                int rowsAffected = stmt.executeUpdate();
+                if (rowsAffected > 0) {
+                    JOptionPane.showMessageDialog(this, "Funcionário excluído com sucesso.");
+                    listaFuncionarios(); // Atualiza a tabela após exclusão
+                } else {
+                    JOptionPane.showMessageDialog(this, "Falha ao excluir o funcionário.");
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    if (stmt != null) {
+                        stmt.close();
+                    }
+                    if (conn != null) {
+                        conn.close();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    private void configurarDelecaoPorTeclaDelete() {
+        jTable1.addKeyListener(new java.awt.event.KeyAdapter() {
+            @Override
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                if (evt.getKeyCode() == java.awt.event.KeyEvent.VK_DELETE) {
+                    excluirFuncionario();  // Chama a função de exclusão
+                }
+            }
+        });
     }
 
     /**
