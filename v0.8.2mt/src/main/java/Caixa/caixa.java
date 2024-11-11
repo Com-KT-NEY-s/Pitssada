@@ -19,7 +19,7 @@ import javax.swing.table.DefaultTableModel;
 
 public class Caixa extends javax.swing.JFrame {
 
-    private DefaultTableModel tabelaCaixas = new DefaultTableModel(new Object[]{"Caixa", "Funcionário", "Aberto"}, 0) {
+    private DefaultTableModel tabelaCaixas = new DefaultTableModel(new Object[]{"ID", "Nº Caixa", "Funcionário", "Aberto"}, 0) {
         @Override
         public boolean isCellEditable(int row, int column) {
             return false;
@@ -27,9 +27,15 @@ public class Caixa extends javax.swing.JFrame {
     };
 
     private static int id_caixa;
+    private static int n_caixa;
+    private static String funcionario;
 
     public static int getIDCaixa() {
         return id_caixa;
+    }
+    
+    public static int getNCaixa() {
+        return n_caixa;
     }
 
     public Caixa() {
@@ -77,7 +83,7 @@ public class Caixa extends javax.swing.JFrame {
         ResultSet rs = null;
 
         try {
-            String sql = "SELECT id_caixa, id_funcionario, caixa, nome_funcionario, aberto FROM caixa";
+            String sql = "SELECT id_caixa, caixa, nome_funcionario, aberto FROM caixa";
             stmt = conn.prepareStatement(sql);
             rs = stmt.executeQuery();
 
@@ -88,9 +94,10 @@ public class Caixa extends javax.swing.JFrame {
                 String aberto = rs.getBoolean("aberto") ? "Sim" : "Não";
 
                 Object[] row = {
-                    rs.getInt("caixa"),
-                    rs.getString("nome_funcionario"),
-                    aberto
+                    rs.getInt("id_caixa"), // Adiciona o ID do caixa como primeira coluna
+                    rs.getInt("caixa"), // Número do caixa
+                    rs.getString("nome_funcionario"), // Nome do funcionário
+                    aberto // Status de "aberto" (Sim ou Não)
                 };
                 tabelaCaixas.addRow(row);
             }
@@ -140,6 +147,7 @@ public class Caixa extends javax.swing.JFrame {
         int selectedRow = JTcaixas.getSelectedRow();
         if (selectedRow != -1) {
             id_caixa = (int) tabelaCaixas.getValueAt(selectedRow, 0);
+            n_caixa = (int) tabelaCaixas.getValueAt(selectedRow, 1);
             home h = new home();
             h.setVisible(true);
             h.setLocationRelativeTo(null);
