@@ -1,7 +1,16 @@
 package Inicio;
 
 import Caixa.Caixa;
+import com.formdev.flatlaf.FlatDarkLaf;
+import com.formdev.flatlaf.FlatLightLaf;
+import static com.sun.management.VMOption.Origin.CONFIG_FILE;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Properties;
 import javax.swing.*;
+import static javax.swing.UIManager.setLookAndFeel;
 
 public class Configuracoes extends javax.swing.JFrame {
 
@@ -24,21 +33,58 @@ public class Configuracoes extends javax.swing.JFrame {
         idCaixaLbl.setText(String.valueOf(id_caixa));
         nCaixaLbl.setText(String.valueOf(n_caixa));
         nomeFuncionario.setText(funcionario);
+    }
 
-        temaEscuroCheck.addActionListener(e -> {
-            boolean isDarkMode = temaEscuroCheck.isSelected();
-            String theme = isDarkMode ? "dark" : "light";
-            ConfigManager.saveTheme(theme);
+    // Salva a preferência de tema no arquivo
+    private void saveThemePreference(String theme) {
+        Properties properties = new Properties();
+        try (FileOutputStream fos = new FileOutputStream(CONFIG_FILE)) {
+            properties.setProperty("theme", theme);
+            properties.store(fos, "User Preferences");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
-            int response = JOptionPane.showConfirmDialog(this,
-                    "Para aplicar o tema, é necessário reiniciar o aplicativo. Deseja reiniciar agora?",
-                    "Reiniciar", JOptionPane.YES_NO_OPTION);
+    // Carrega a preferência de tema do arquivo
+    private String loadThemePreference() {
+        Properties properties = new Properties();
+        try (FileInputStream fis = new FileInputStream(CONFIG_FILE)) {
+            properties.load(fis);
+            return properties.getProperty("theme", "light"); // Padrão é "light"
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "light";
+        }
+    }
 
-            if (response == JOptionPane.YES_OPTION) {
-                restartApplication();
+    // Método para reiniciar a aplicação
+    private void restartApplication() {
+        try {
+            String javaBin = System.getProperty("java.home") + "/bin/java";
+            File currentJar = new File(getClass().getProtectionDomain().getCodeSource().getLocation().toURI());
+
+            if (!currentJar.getName().endsWith(".jar")) {
+                return; // Reinicia apenas se o programa estiver em um JAR
             }
-        });
 
+            ProcessBuilder builder = new ProcessBuilder(javaBin, "-jar", currentJar.getPath());
+            builder.start();
+            System.exit(0);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void main(String args[]) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException {
+        // Carregar e aplicar o tema salvo
+        String theme = new Configuracoes().loadThemePreference();
+        setLookAndFeel(theme);
+
+        java.awt.EventQueue.invokeLater(() -> {
+            new Configuracoes().setVisible(true);
+        });
     }
 
     /**
