@@ -9,6 +9,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.*;
 import static javax.swing.UIManager.setLookAndFeel;
 
@@ -18,11 +20,55 @@ public class Configuracoes extends javax.swing.JFrame {
         initComponents();
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // Evita que o programa finalize ao fechar 'home'
         setLabels();
+        setThemeBasedOnCheckbox();
 
-        // Carregar preferência de tema ao iniciar
-        String theme = loadThemePreference();
-        boolean isDarkMode = "dark".equalsIgnoreCase(theme);
-        temaEscuroCheck.setSelected(isDarkMode);
+        temaEscuroCheck.addActionListener(e -> {
+            int confirm = JOptionPane.showConfirmDialog(
+                    this,
+                    "O tema será aplicado após reiniciar o aplicativo. Deseja reiniciar agora?",
+                    "Confirmar Reinício",
+                    JOptionPane.YES_NO_OPTION
+            );
+
+            if (confirm == JOptionPane.YES_OPTION) {
+                // Define o tema de acordo com o checkbox
+                String theme = temaEscuroCheck.isSelected() ? "dark" : "light";
+                setLookAndFeel(theme);
+
+                // Reinicia o aplicativo
+                restartApplication();
+            }
+        });
+    }
+
+    private void setThemeBasedOnCheckbox() {
+        // Define o tema inicial com base no estado do checkbox
+        if (temaEscuroCheck.isSelected()) {
+            setLookAndFeel("dark");
+        } else {
+            setLookAndFeel("light");
+        }
+    }
+
+    private void setLookAndFeel(String theme) {
+        try {
+            if ("dark".equalsIgnoreCase(theme)) {
+                UIManager.setLookAndFeel(new FlatDarkLaf());
+            } else {
+                UIManager.setLookAndFeel(new FlatLightLaf());
+            }
+            SwingUtilities.updateComponentTreeUI(this); // Atualiza a interface imediatamente
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void restartApplication() {
+        dispose(); // Fecha a janela atual
+        SwingUtilities.invokeLater(() -> {
+            Configuracoes configuracoes = new Configuracoes();
+            configuracoes.setVisible(true);
+        });
     }
 
     private void setLabels() {
@@ -33,58 +79,6 @@ public class Configuracoes extends javax.swing.JFrame {
         idCaixaLbl.setText(String.valueOf(id_caixa));
         nCaixaLbl.setText(String.valueOf(n_caixa));
         nomeFuncionario.setText(funcionario);
-    }
-
-    // Salva a preferência de tema no arquivo
-    private void saveThemePreference(String theme) {
-        Properties properties = new Properties();
-        try (FileOutputStream fos = new FileOutputStream(CONFIG_FILE)) {
-            properties.setProperty("theme", theme);
-            properties.store(fos, "User Preferences");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    // Carrega a preferência de tema do arquivo
-    private String loadThemePreference() {
-        Properties properties = new Properties();
-        try (FileInputStream fis = new FileInputStream(CONFIG_FILE)) {
-            properties.load(fis);
-            return properties.getProperty("theme", "light"); // Padrão é "light"
-        } catch (IOException e) {
-            e.printStackTrace();
-            return "light";
-        }
-    }
-
-    // Método para reiniciar a aplicação
-    private void restartApplication() {
-        try {
-            String javaBin = System.getProperty("java.home") + "/bin/java";
-            File currentJar = new File(getClass().getProtectionDomain().getCodeSource().getLocation().toURI());
-
-            if (!currentJar.getName().endsWith(".jar")) {
-                return; // Reinicia apenas se o programa estiver em um JAR
-            }
-
-            ProcessBuilder builder = new ProcessBuilder(javaBin, "-jar", currentJar.getPath());
-            builder.start();
-            System.exit(0);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static void main(String args[]) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException {
-        // Carregar e aplicar o tema salvo
-        String theme = new Configuracoes().loadThemePreference();
-        setLookAndFeel(theme);
-
-        java.awt.EventQueue.invokeLater(() -> {
-            new Configuracoes().setVisible(true);
-        });
     }
 
     /**
@@ -185,39 +179,8 @@ public class Configuracoes extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    /**
-     * @param args the command line arguments
-     */
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Configuracoes.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Configuracoes.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Configuracoes.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Configuracoes.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new Configuracoes().setVisible(true);
-            }
-        });
+        java.awt.EventQueue.invokeLater(() -> new Configuracoes().setVisible(true));
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
