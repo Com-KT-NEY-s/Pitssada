@@ -36,6 +36,10 @@ public class home extends javax.swing.JFrame {
         initComponents();
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // Evita que o programa finalize ao fechar 'home'
+
+        // Aplique o tema selecionado no início
+        String theme = Configuracoes.isDarkThemeEnabled() ? "dark" : "light";
+        Configuracoes.setLookAndFeel(theme);
         setStyles();
         listaPedidos();
         setKeyboardShortcuts();
@@ -176,7 +180,7 @@ public class home extends javax.swing.JFrame {
                 jMenuItem2ActionPerformed(e);
             }
         });
-        
+
         // Shortcut Alt+B para "Configurações"
         rootPane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.ALT_DOWN_MASK), "openConfigs");
         rootPane.getActionMap().put("openConfigs", new AbstractAction() {
@@ -188,29 +192,47 @@ public class home extends javax.swing.JFrame {
     }
 
     private void setStyles() {
-        Color backgroundColor = new Color(245, 245, 245);
-        Color panelBackgroundColor = new Color(230, 230, 230);
-        Color tableBackgroundColor = new Color(255, 255, 255);
-        Color headerColor = new Color(200, 200, 200);
+        Color backgroundColor;
+        Color panelBackgroundColor;
+        Color tableBackgroundColor;
+        Color headerColor;
+        Color textColor;
 
-        Font titleFont = new Font("SansSerif", Font.BOLD, 14);
-        Font tableFont = new Font("SansSerif", Font.PLAIN, 12);
+        if (Configuracoes.isDarkThemeEnabled()) {
+            // Cores para o tema escuro
+            backgroundColor = new Color(60, 63, 65);
+            panelBackgroundColor = new Color(43, 43, 43);
+            tableBackgroundColor = new Color(69, 73, 74);
+            headerColor = new Color(75, 110, 175);
+            textColor = Color.WHITE;
+        } else {
+            // Cores para o tema claro
+            backgroundColor = new Color(245, 245, 245);
+            panelBackgroundColor = new Color(230, 230, 230);
+            tableBackgroundColor = new Color(255, 255, 255);
+            headerColor = new Color(200, 200, 200);
+            textColor = Color.DARK_GRAY;
+        }
 
+        // Configura o estilo da janela e dos componentes
         this.getContentPane().setBackground(backgroundColor);
         jPanel1.setBackground(panelBackgroundColor);
         jPanel1.setBorder(new EmptyBorder(10, 10, 10, 10));
 
-        JTpedidos.setFont(tableFont);
+        // Configuração da tabela
+        JTpedidos.setFont(new Font("SansSerif", Font.PLAIN, 12));
         JTpedidos.setBackground(tableBackgroundColor);
+        JTpedidos.setForeground(textColor);
         JTpedidos.setGridColor(new Color(210, 210, 210));
-        JTpedidos.getTableHeader().setFont(titleFont);
+        JTpedidos.getTableHeader().setFont(new Font("SansSerif", Font.BOLD, 14));
         JTpedidos.getTableHeader().setBackground(headerColor);
-        JTpedidos.getTableHeader().setForeground(Color.DARK_GRAY);
+        JTpedidos.getTableHeader().setForeground(textColor);
 
+        // Configuração da barra de menus
         jMenuBar1.setBackground(headerColor);
         jMenuBar1.setBorderPainted(false);
-        acoes.setFont(titleFont);
-        cardapio.setFont(titleFont);
+        acoes.setFont(new Font("SansSerif", Font.BOLD, 14));
+        cardapio.setFont(new Font("SansSerif", Font.BOLD, 14));
 
         jPanel1.add(connPanel);
     }
@@ -336,7 +358,6 @@ public class home extends javax.swing.JFrame {
         }
     }
 
-    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always

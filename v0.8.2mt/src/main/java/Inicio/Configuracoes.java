@@ -4,6 +4,7 @@ import Caixa.Caixa;
 import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.FlatLightLaf;
 import static com.sun.management.VMOption.Origin.CONFIG_FILE;
+import java.awt.Frame;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -16,69 +17,52 @@ import static javax.swing.UIManager.setLookAndFeel;
 
 public class Configuracoes extends javax.swing.JFrame {
 
+    private static boolean darkThemeEnabled = false;
+
+
     public Configuracoes() {
         initComponents();
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // Evita que o programa finalize ao fechar 'home'
-        setLabels();
-        setThemeBasedOnCheckbox();
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        temaEscuroCheck.setSelected(darkThemeEnabled);
 
         temaEscuroCheck.addActionListener(e -> {
-            int confirm = JOptionPane.showConfirmDialog(
-                    this,
-                    "O tema será aplicado após reiniciar o aplicativo. Deseja reiniciar agora?",
-                    "Confirmar Reinício",
-                    JOptionPane.YES_NO_OPTION
-            );
-
-            if (confirm == JOptionPane.YES_OPTION) {
-                // Define o tema de acordo com o checkbox
-                String theme = temaEscuroCheck.isSelected() ? "dark" : "light";
-                setLookAndFeel(theme);
-
-                // Reinicia o aplicativo
-                restartApplication();
-            }
+            darkThemeEnabled = temaEscuroCheck.isSelected();
+            setTheme();
         });
     }
 
-    private void setThemeBasedOnCheckbox() {
-        // Define o tema inicial com base no estado do checkbox
-        if (temaEscuroCheck.isSelected()) {
-            setLookAndFeel("dark");
-        } else {
-            setLookAndFeel("light");
-        }
+    private void setTheme() {
+        // Configura o tema com base na seleção
+        String theme = darkThemeEnabled ? "dark" : "light";
+        setLookAndFeel(theme);
+
+        // Atualiza todas as janelas abertas para o tema selecionado
+        updateThemeInOpenWindows();
     }
 
-    private void setLookAndFeel(String theme) {
+    static void setLookAndFeel(String theme) {
         try {
             if ("dark".equalsIgnoreCase(theme)) {
                 UIManager.setLookAndFeel(new FlatDarkLaf());
             } else {
                 UIManager.setLookAndFeel(new FlatLightLaf());
             }
-            SwingUtilities.updateComponentTreeUI(this); // Atualiza a interface imediatamente
+            // Atualiza o tema em todas as janelas abertas
+            SwingUtilities.updateComponentTreeUI(JFrame.getFrames()[0]);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private void restartApplication() {
-        dispose(); // Fecha a janela atual
-        SwingUtilities.invokeLater(() -> {
-            Configuracoes configuracoes = new Configuracoes();
-            configuracoes.setVisible(true);
-        });
+    private static void updateThemeInOpenWindows() {
+        for (Frame frame : JFrame.getFrames()) {
+            SwingUtilities.updateComponentTreeUI(frame);
+            frame.repaint();
+        }
     }
 
-    private void setLabels() {
-        Caixa c = new Caixa();
-        int id_caixa = c.getIDCaixa();
-        int n_caixa = c.getNCaixa();
-        String funcionario = c.getFuncionario();
-        idCaixaLbl.setText(String.valueOf(id_caixa));
-        nCaixaLbl.setText(String.valueOf(n_caixa));
-        nomeFuncionario.setText(funcionario);
+    public static boolean isDarkThemeEnabled() {
+        return darkThemeEnabled;
     }
 
     /**
