@@ -221,9 +221,9 @@ public class home extends javax.swing.JFrame {
 
         // Configuração da tabela
         JTpedidos.setFont(new Font("SansSerif", Font.PLAIN, 12));
-        JTpedidos.setBackground(tableBackgroundColor);
+//        JTpedidos.setBackground(tableBackgroundColor);
         JTpedidos.setForeground(textColor);
-        JTpedidos.setGridColor(new Color(210, 210, 210));
+//        JTpedidos.setGridColor(new Color(210, 210, 210));
         JTpedidos.getTableHeader().setFont(new Font("SansSerif", Font.BOLD, 14));
         JTpedidos.getTableHeader().setBackground(headerColor);
         JTpedidos.getTableHeader().setForeground(textColor);
