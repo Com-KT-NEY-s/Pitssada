@@ -176,6 +176,15 @@ public class home extends javax.swing.JFrame {
                 jMenuItem2ActionPerformed(e);
             }
         });
+        
+        // Shortcut Alt+B para "Configurações"
+        rootPane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.ALT_DOWN_MASK), "openConfigs");
+        rootPane.getActionMap().put("openConfigs", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                configsActionPerformed(e);
+            }
+        });
     }
 
     private void setStyles() {
@@ -327,6 +336,7 @@ public class home extends javax.swing.JFrame {
         }
     }
 
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -342,13 +352,14 @@ public class home extends javax.swing.JFrame {
         jMenu4 = new javax.swing.JMenu();
         jMenu1 = new javax.swing.JMenu();
         jPanel1 = new javax.swing.JPanel();
-        connPanel = new javax.swing.JPanel();
-        msgPanel = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         JTpedidos = new javax.swing.JTable();
+        connPanel = new javax.swing.JPanel();
+        msgPanel = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
         acoes = new javax.swing.JMenu();
         fazP = new javax.swing.JMenuItem();
+        configs = new javax.swing.JMenuItem();
         cardapio = new javax.swing.JMenu();
         verCardapio = new javax.swing.JMenuItem();
         menuTamanho = new javax.swing.JMenuItem();
@@ -367,6 +378,21 @@ public class home extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 766, Short.MAX_VALUE)
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+
+        JTpedidos.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        JTpedidos.setModel(tabelaPedidos);
+        jScrollPane1.setViewportView(JTpedidos);
 
         connPanel.setBackground(new java.awt.Color(255, 255, 255));
         connPanel.setPreferredSize(new java.awt.Dimension(150, 300));
@@ -390,25 +416,6 @@ public class home extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addComponent(connPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 766, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap(12, Short.MAX_VALUE)
-                .addComponent(connPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE))
-        );
-
-        JTpedidos.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        JTpedidos.setModel(tabelaPedidos);
-        jScrollPane1.setViewportView(JTpedidos);
-
         acoes.setText("Ações");
 
         fazP.setText("Fazer Pedido");
@@ -418,6 +425,14 @@ public class home extends javax.swing.JFrame {
             }
         });
         acoes.add(fazP);
+
+        configs.setText("Configurações");
+        configs.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                configsActionPerformed(evt);
+            }
+        });
+        acoes.add(configs);
 
         jMenuBar1.add(acoes);
 
@@ -469,7 +484,11 @@ public class home extends javax.swing.JFrame {
                 .addGap(0, 7, Short.MAX_VALUE))
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(connPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 766, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -478,6 +497,8 @@ public class home extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 530, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(connPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(24, 24, 24)
                 .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
@@ -515,6 +536,12 @@ public class home extends javax.swing.JFrame {
         j.setLocationRelativeTo(null);
     }//GEN-LAST:event_jMenuItem2ActionPerformed
 
+    private void configsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_configsActionPerformed
+        JFrame j = new Configuracoes();
+        j.setVisible(true);
+        j.setLocationRelativeTo(null);
+    }//GEN-LAST:event_configsActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -537,6 +564,7 @@ public class home extends javax.swing.JFrame {
     private javax.swing.JTable JTpedidos;
     private javax.swing.JMenu acoes;
     private javax.swing.JMenu cardapio;
+    private javax.swing.JMenuItem configs;
     private javax.swing.JPanel connPanel;
     private javax.swing.JMenuItem fazP;
     private javax.swing.JMenu jMenu1;
