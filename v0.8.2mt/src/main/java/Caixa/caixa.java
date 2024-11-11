@@ -37,6 +37,10 @@ public class Caixa extends javax.swing.JFrame {
     public static int getNCaixa() {
         return n_caixa;
     }
+    
+    public static String getFuncionario() {
+        return funcionario;
+    }
 
     public Caixa() {
         initComponents();
@@ -148,6 +152,7 @@ public class Caixa extends javax.swing.JFrame {
         if (selectedRow != -1) {
             id_caixa = (int) tabelaCaixas.getValueAt(selectedRow, 0);
             n_caixa = (int) tabelaCaixas.getValueAt(selectedRow, 1);
+            funcionario = (String) tabelaCaixas.getValueAt(selectedRow, 2);
             home h = new home();
             h.setVisible(true);
             h.setLocationRelativeTo(null);

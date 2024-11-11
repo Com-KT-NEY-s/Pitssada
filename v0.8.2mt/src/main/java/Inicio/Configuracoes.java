@@ -15,8 +15,10 @@ public class Configuracoes extends javax.swing.JFrame {
         Caixa c = new Caixa();
         int id_caixa = c.getIDCaixa();
         int n_caixa = c.getNCaixa();
+        String funcionario = c.getFuncionario();
         idCaixaLbl.setText(String.valueOf(id_caixa));
         nCaixaLbl.setText(String.valueOf(n_caixa));
+        nomeFuncionario.setText(funcionario);
     }
 
     /**
@@ -34,6 +36,7 @@ public class Configuracoes extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         nCaixaLbl = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
+        nomeFuncionario = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -59,18 +62,17 @@ public class Configuracoes extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel3)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 174, Short.MAX_VALUE)
+                        .addComponent(nomeFuncionario))
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel2)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 174, Short.MAX_VALUE)
-                                .addComponent(nCaixaLbl))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel1)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(idCaixaLbl)))
-                        .addGap(70, 70, 70))))
+                        .addComponent(jLabel2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(nCaixaLbl))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(idCaixaLbl)))
+                .addGap(70, 70, 70))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -86,7 +88,9 @@ public class Configuracoes extends javax.swing.JFrame {
                     .addComponent(jLabel2)
                     .addComponent(nCaixaLbl))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel3)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(nomeFuncionario))
                 .addContainerGap(385, Short.MAX_VALUE))
         );
 
@@ -135,5 +139,6 @@ public class Configuracoes extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel nCaixaLbl;
+    private javax.swing.JLabel nomeFuncionario;
     // End of variables declaration//GEN-END:variables
 }
