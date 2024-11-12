@@ -106,9 +106,6 @@
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="idCaixaLbl">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="Exemplo"/>
-      </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel2">
       <Properties>
@@ -116,9 +113,6 @@
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="nCaixaLbl">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="Exemplo"/>
-      </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel3">
       <Properties>
@@ -126,9 +120,6 @@
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="nomeFuncionario">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="Exemplo"/>
-      </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel4">
       <Properties>

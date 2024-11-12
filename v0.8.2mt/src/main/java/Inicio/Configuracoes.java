@@ -19,7 +19,6 @@ public class Configuracoes extends javax.swing.JFrame {
 
     private static boolean darkThemeEnabled = false;
 
-
     public Configuracoes() {
         initComponents();
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -29,6 +28,7 @@ public class Configuracoes extends javax.swing.JFrame {
             darkThemeEnabled = temaEscuroCheck.isSelected();
             setTheme();
         });
+        mostraInfo();
     }
 
     private void setTheme() {
@@ -65,6 +65,16 @@ public class Configuracoes extends javax.swing.JFrame {
         return darkThemeEnabled;
     }
 
+    public void mostraInfo() {
+        Caixa c = new Caixa();
+        int IDCaixa = c.getIDCaixa();
+        int nCaixa = c.getNCaixa();
+        String funcionario = c.getFuncionario();
+        idCaixaLbl.setText(String.valueOf(IDCaixa));
+        nCaixaLbl.setText(String.valueOf(nCaixa));
+        nomeFuncionario.setText(funcionario);
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -91,15 +101,9 @@ public class Configuracoes extends javax.swing.JFrame {
 
         jLabel1.setText("ID do Caixa");
 
-        idCaixaLbl.setText("Exemplo");
-
         jLabel2.setText("Nº do Caixa");
 
-        nCaixaLbl.setText("Exemplo");
-
         jLabel3.setText("Funcionário");
-
-        nomeFuncionario.setText("Exemplo");
 
         jLabel4.setText("_______________________________________________________________");
 
