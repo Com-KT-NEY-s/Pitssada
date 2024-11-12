@@ -146,11 +146,10 @@ public class home extends javax.swing.JFrame {
 
         if (resposta == JOptionPane.YES_OPTION) {
             // Abre a janela Caixa com a coluna "Aberto" marcada como "sim"
+            fecharCaixa();
             JFrame caixa = new Caixa();
             caixa.setVisible(true);
             caixa.setLocationRelativeTo(null);
-            // Código para definir a coluna "Aberto" como "sim" no Caixa
-            ((Caixa) caixa).setAberto(true);
 
             // Fecha apenas a janela `home`
             dispose();
@@ -159,13 +158,34 @@ public class home extends javax.swing.JFrame {
             JFrame caixa = new Caixa();
             caixa.setVisible(true);
             caixa.setLocationRelativeTo(null);
-            ((Caixa) caixa).setAberto(true);
 
             dispose();
         } else if (resposta == JOptionPane.NO_OPTION) {
-            
+
         }
         // Se "Cancelar" é selecionado, não faz nada.
+    }
+
+    public void fecharCaixa() {
+        Connection conn = Database.getConnection();
+        PreparedStatement updateStmt = null;
+
+        try {
+            String sqlUpdate = "UPDATE caixa SET aberto = ?, fechamento = ? WHERE id_caixa = ?";
+            updateStmt = conn.prepareStatement(sqlUpdate);
+            updateStmt.setBoolean(1, false);
+            updateStmt.setTimestamp(2, new Timestamp(System.currentTimeMillis()));
+            updateStmt.setInt(3, Caixa.getIDCaixa());
+
+            int rowsUpdated = updateStmt.executeUpdate();
+            if (rowsUpdated > 0) {
+                JOptionPane.showMessageDialog(this, "Caixa fechado com sucesso.");
+            } else {
+                JOptionPane.showMessageDialog(this, "Erro ao fechar o caixa.");
+            }
+        } catch (SQLException e) {
+        }
+
     }
 
     private void setKeyboardShortcuts() {

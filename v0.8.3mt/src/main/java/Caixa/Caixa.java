@@ -46,7 +46,6 @@ public class Caixa extends javax.swing.JFrame {
     public static boolean setAberto(boolean aberto) {
         
         return aberto;
-        
     }
 
     public Caixa() {
@@ -102,13 +101,13 @@ public class Caixa extends javax.swing.JFrame {
             tabelaCaixas.setRowCount(0);
 
             while (rs.next()) {
-                // AQU  = rs.getBoolean("aberto") ? "Sim" : "Não";
+                // = rs.getBoolean("aberto") ? "Sim" : "Não";
 
                 Object[] row = {
                     rs.getInt("id_caixa"), // Adiciona o ID do caixa como primeira coluna
                     rs.getInt("caixa"), // Número do caixa
                     rs.getString("nome_funcionario"), // Nome do funcionário
-                    aberto // Status de "aberto" (Sim ou Não)
+                    rs.getBoolean("aberto") ? "Sim" : "Não"
                 };
                 tabelaCaixas.addRow(row);
             }
