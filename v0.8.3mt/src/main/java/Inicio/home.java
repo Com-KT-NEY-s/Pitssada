@@ -133,25 +133,39 @@ public class home extends javax.swing.JFrame {
     }
 
     private void confirmarFechamento() {
-        int resposta = JOptionPane.showConfirmDialog(
+        int resposta = JOptionPane.showOptionDialog(
                 this,
-                "Tem certeza que deseja sair?",
+                "Sair?\n Sim - Fechar o Caixa\n Não - Sair dos Pedidos, Caixa continua Aberto\n Cancelar - Nada",
                 "Confirmação de Saída",
-                JOptionPane.YES_NO_OPTION,
-                JOptionPane.QUESTION_MESSAGE
+                JOptionPane.YES_NO_CANCEL_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                new Object[]{"Sim", "Não", "Cancelar"},
+                "Sim"
         );
 
         if (resposta == JOptionPane.YES_OPTION) {
-            // Abre a janela Caixa
+            // Abre a janela Caixa com a coluna "Aberto" marcada como "sim"
             JFrame caixa = new Caixa();
             caixa.setVisible(true);
             caixa.setLocationRelativeTo(null);
+            // Código para definir a coluna "Aberto" como "sim" no Caixa
+            ((Caixa) caixa).setAberto(true);
 
-            // Fecha somente a janela 'home'
+            // Fecha apenas a janela `home`
             dispose();
+        } else if (resposta == JOptionPane.NO_OPTION) {
+            // Define a coluna "Aberto" como "sim" no Caixa e fecha `home`
+            JFrame caixa = new Caixa();
+            caixa.setVisible(true);
+            caixa.setLocationRelativeTo(null);
+            ((Caixa) caixa).setAberto(true);
+
+            dispose();
+        } else if (resposta == JOptionPane.NO_OPTION) {
+            
         }
-        
-        
+        // Se "Cancelar" é selecionado, não faz nada.
     }
 
     private void setKeyboardShortcuts() {

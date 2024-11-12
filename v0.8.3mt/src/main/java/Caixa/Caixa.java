@@ -29,6 +29,7 @@ public class Caixa extends javax.swing.JFrame {
     private static int id_caixa;
     private static int n_caixa;
     private static String funcionario;
+    private static boolean aberto;
 
     public static int getIDCaixa() {
         return id_caixa;
@@ -40,6 +41,12 @@ public class Caixa extends javax.swing.JFrame {
     
     public static String getFuncionario() {
         return funcionario;
+    }
+    
+    public static boolean setAberto(boolean aberto) {
+        
+        return aberto;
+        
     }
 
     public Caixa() {
@@ -95,7 +102,7 @@ public class Caixa extends javax.swing.JFrame {
             tabelaCaixas.setRowCount(0);
 
             while (rs.next()) {
-                String aberto = rs.getBoolean("aberto") ? "Sim" : "Não";
+                // AQU  = rs.getBoolean("aberto") ? "Sim" : "Não";
 
                 Object[] row = {
                     rs.getInt("id_caixa"), // Adiciona o ID do caixa como primeira coluna
@@ -157,6 +164,7 @@ public class Caixa extends javax.swing.JFrame {
             h.setVisible(true);
             h.setLocationRelativeTo(null);
             dispose();
+            setAberto(true);
         }
     }
 
