@@ -1,6 +1,7 @@
 package Pedido;
 
 import Arquivos.Lucro;
+import Caixa.Caixa;
 import Inicio.home;
 import DB.Database;
 import java.awt.event.*;
@@ -18,6 +19,11 @@ public class IntPizza extends javax.swing.JDialog {
     public double precoTamanho = 0;
     public double precoBebida = 0;
     public double precoFinal;
+
+    Caixa c = new Caixa();
+    int id_caixa = c.getIDCaixa();
+    int n_caixa = c.getNCaixa();
+    String funcionario = c.getFuncionario();
 
     public IntPizza(java.awt.Frame parent) {
         super(parent, true);
@@ -285,6 +291,11 @@ public class IntPizza extends javax.swing.JDialog {
                 + "Tamanho: " + tamanho + "\n"
                 + "Bebida: " + bebida + "\n"
                 + "-------------------------------\n"
+                + "INFORMAÇÕES\n"
+                + "ID Caixa: " + id_caixa + "\n"
+                + "Nº Caixa: " + n_caixa + "\n"
+                + "Funcionário: " + funcionario + "\n"
+                + "-------------------------------\n"
                 + "PREÇO\n"
                 + "Total: " + precoFinal + "\n"
                 + "-------------------------------\n"
@@ -444,7 +455,7 @@ public class IntPizza extends javax.swing.JDialog {
 
         try {
             // Query de inserção sem o `id_pedido` (auto-incremento)
-            String sql = "INSERT INTO `pedido`(`sabor`, `tamanho`, `bebida`, `nomeCliente`, `rua`, `bairro`, `numero`, `hora`, `precoFinal`) VALUES (?,?,?,?,?,?,?,?,?)";
+            String sql = "INSERT INTO pedido(sabor, tamanho, bebida, nomeCliente, rua, bairro, numero, hora, precoFinal, id_caixa) VALUES (?,?,?,?,?,?,?,?,?,?)";
             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 
             stmt.setString(1, sabor);
@@ -456,6 +467,7 @@ public class IntPizza extends javax.swing.JDialog {
             stmt.setInt(7, nCasa);
             stmt.setString(8, horaP);
             stmt.setDouble(9, precoFinal);
+            stmt.setInt(10, id_caixa);
 
             stmt.executeUpdate();
 
