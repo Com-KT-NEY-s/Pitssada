@@ -32,7 +32,7 @@ O projeto é desenvolvido em Java e organizado em versões, cada uma com melhori
 - **home.java**: Interface que gerencia os pedidos abertos.
 - **IntPizza.java**: Classe responsável por fazer os pedidos.
 - **JCardapio.java**: Controla os sabores, tamanhos e bebidas adicionados ao "cardápio".
-- **Funcionarios.java**: Classe que gerencia informações dos clientes, como cadastro e consultas.
+- **Funcionarios.java**: Classe que gerencia informações os funcionarios cadastrados.
 
 ## Como Usar
 
