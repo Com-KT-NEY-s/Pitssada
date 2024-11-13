@@ -10,12 +10,13 @@
 
 ## Descrição do Projeto
 
-**Pitssada** é um sistema de gerenciamento para pizzarias, desenvolvido em Java com a biblioteca **Swing** para a interface gráfica. O objetivo do projeto é auxiliar no controle de pedidos, estoque e gestão de clientes, permitindo uma organização mais eficiente e ágil para pizzarias.
+**Pitssada** é um sistema de gerenciamento para pizzarias, desenvolvido em Java com a biblioteca **Swing** para a interface gráfica. O objetivo do projeto é auxiliar no controle de pedidos, estoque e gestão de funcionários, permitindo uma organização mais eficiente e ágil para pizzarias.
 
 ## Funcionalidades Principais
 
-- Gerenciamento de pedidos: criação, visualização e atualização de pedidos.
-- Controle de estoque: monitora a quantidade de ingredientes.
+- Gerenciamento de pedidos: criação e visualização de pedidos.
+- Controle de "cardápio":
+- Cadastro de funcionários: registra e consulta 
 - Cadastro de clientes: registra e consulta dados de clientes.
 - Interface amigável para funcionários, facilitando a operação do sistema.
 
@@ -24,15 +25,14 @@
 O projeto é desenvolvido em Java e organizado em versões, cada uma com melhorias e atualizações. A estrutura de diretórios segue o padrão:
 
 - `src/` - Código-fonte principal.
-- `lib/` - Dependências externas e bibliotecas.
-- `docs/` - Documentação do projeto (se aplicável).
 
 ### Classes Principais
 
-- **Pedido.java**: Classe responsável pelo controle de pedidos, com métodos para adicionar, atualizar e visualizar pedidos.
-- **Estoque.java**: Controla o inventário de ingredientes e produtos.
-- **Cliente.java**: Classe que gerencia informações dos clientes, como cadastro e consultas.
-- **Interface.java**: Interface gráfica do sistema, implementada com Swing, para uma experiência amigável ao usuário.
+- **Caixa.java**: Controla os caixas abertos e fechados.
+- **home.java**: Interface que gerencia os pedidos abertos.
+- **IntPizza.java**: Classe responsável por fazer os pedidos.
+- **JCardapio.java**: Controla os sabores, tamanhos e bebidas adicionados ao "cardápio".
+- **Funcionarios.java**: Classe que gerencia informações dos clientes, como cadastro e consultas.
 
 ## Como Usar
 
@@ -53,17 +53,13 @@ O projeto é desenvolvido em Java e organizado em versões, cada uma com melhori
 
 ## Contribuidores
 
-- **Mathiack**
-- **Monari14**
-- **Flarom**
-- **Wesw3s**
+- **[Mathiack](https://github.com/Mathiack)**
+- **[Monari14](https://github.com/Monari14)**
+- **[Flarom](https://github.com/flarom)**
+- **[Wesw3s](https://github.com/Wesw3s)**
 
 Agradecemos todas as contribuições! Sinta-se à vontade para abrir *issues* e *pull requests*.
 
 ## Licença
 
 Este projeto é licenciado sob uma licença personalizada. [Consulte a licença aqui](https://github.com/Com-KT-NEY-s/Pitssada/blob/main/LICENSE.md) para mais informações sobre os termos de uso.
-
----
-
-Este README cobre as principais informações do projeto. Se precisar de mais detalhes ou ajuda para expandir alguma seção, é só avisar!
