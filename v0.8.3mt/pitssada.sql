@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 08/11/2024 às 01:43
+-- Tempo de geração: 13/11/2024 às 01:07
 -- Versão do servidor: 10.4.32-MariaDB
 -- Versão do PHP: 8.0.30
 
@@ -34,14 +34,6 @@ CREATE TABLE `bebida` (
   `qntBebida` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Despejando dados para a tabela `bebida`
---
-
-INSERT INTO `bebida` (`id_bebida`, `bebida`, `precoBebida`, `qntBebida`) VALUES
-(5, 'Sprite 2L', 8.5, 0),
-(6, 'Guaraná 600mL', 4.65, 10);
-
 -- --------------------------------------------------------
 
 --
@@ -58,15 +50,6 @@ CREATE TABLE `caixa` (
   `aberto` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Despejando dados para a tabela `caixa`
---
-
-INSERT INTO `caixa` (`id_caixa`, `id_funcionario`, `caixa`, `nome_funcionario`, `abertura`, `fechamento`, `aberto`) VALUES
-(1, 1, 1, 'João', '2024-11-08 00:09:09', NULL, 0),
-(2, 1, 2, 'João', '2024-11-08 00:27:23', NULL, 0),
-(3, 1, 2, 'João', '2024-11-08 00:27:37', NULL, 0);
-
 -- --------------------------------------------------------
 
 --
@@ -79,13 +62,6 @@ CREATE TABLE `funcionarios` (
   `cpf` varchar(255) DEFAULT NULL,
   `idade` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Despejando dados para a tabela `funcionarios`
---
-
-INSERT INTO `funcionarios` (`id_funcionario`, `nome_funcionario`, `cpf`, `idade`) VALUES
-(1, 'João', '999999999-99', 19);
 
 -- --------------------------------------------------------
 
@@ -107,23 +83,6 @@ CREATE TABLE `pedido` (
   `id_caixa` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Despejando dados para a tabela `pedido`
---
-
-INSERT INTO `pedido` (`id_pedido`, `sabor`, `tamanho`, `bebida`, `nomeCliente`, `rua`, `bairro`, `numero`, `hora`, `precoFinal`, `id_caixa`) VALUES
-(19, 'czars', 'consideravelmente grande', 'Guaraná 600mL', 'César Augusto Bergamin', 'Treza', 'Treza', 18, '19:41:31', 338.65, 1),
-(20, 'calabresa', 'médto', 'Sprite 2L', 'Monark', 'dele', 'não sei', 14, '20:02:02', 338.65, 1),
-(21, 'ola', 'pequeno', 'Guaraná 600mL', 'Boa noite', 'minha', 'da pitssada', 0, '20:58:59', 338.65, 1),
-(22, 'calabresa', 'médio', 'Sprite 2L', 'Hercio', 'sim', 'deele', 61346, '21:37:34', 169.65, 1),
-(23, 'czar', 'médio', 'Guaraná 600mL', 'Monark', 'dele', 'sim', 14, '21:33:20', 169.65, 1),
-(24, 'czar', 'consideravelmente grande', 'Sprite 2L', 'Czar', 'czar', 'czar', 13, '21:34:59', 169.65, 1),
-(25, 'czar', 'médio', 'Sprite 2L', 'Bom dia', 'ola', 'gostaria', 12351346, '19:27:42', 169.65, 1),
-(26, 'calabresa', 'médio', 'Sprite 2L', 's\\g', 'i', 'hnoiboib', 235, '19:30:29', 169.65, 1),
-(27, 'calabresa', 'médio', 'Sprite 2L', 'asifsjsdo', 'gbiuvbiuvb', 'viuvvvb', 345364, '19:36:53', 169.65, 1),
-(28, 'calabresa', 'médio', 'Sprite 2L', 'aergipoja', 'biuobpoiub', 'oiboip', 3467, '19:38:11', 169.65, 1),
-(29, 'rrrr', 'consideravelmente grande', 'Guaraná 600mL', 'reger', 'ergergerg', 'ergergerg', 457842, '19:39:21', 169.65, 2);
-
 -- --------------------------------------------------------
 
 --
@@ -136,19 +95,6 @@ CREATE TABLE `sabor` (
   `precoSabor` double NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Despejando dados para a tabela `sabor`
---
-
-INSERT INTO `sabor` (`id_sabor`, `sabor`, `precoSabor`) VALUES
-(2, 'calabresa', 15.75),
-(3, 'ola', 14),
-(4, 'czar', 2),
-(5, 'sim', 2134),
-(6, 'rrrr', 2),
-(7, 'fgdf', 234),
-(8, 'monari', 65);
-
 -- --------------------------------------------------------
 
 --
@@ -160,15 +106,6 @@ CREATE TABLE `tamanho` (
   `tamanho` varchar(255) DEFAULT NULL,
   `precoTamanho` double NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Despejando dados para a tabela `tamanho`
---
-
-INSERT INTO `tamanho` (`id_tamanho`, `tamanho`, `precoTamanho`) VALUES
-(4, 'médio', 40),
-(5, 'pequeno', 80),
-(6, 'consideravelmente grande', 100);
 
 --
 -- Índices para tabelas despejadas
@@ -226,19 +163,19 @@ ALTER TABLE `bebida`
 -- AUTO_INCREMENT de tabela `caixa`
 --
 ALTER TABLE `caixa`
-  MODIFY `id_caixa` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id_caixa` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de tabela `funcionarios`
 --
 ALTER TABLE `funcionarios`
-  MODIFY `id_funcionario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id_funcionario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de tabela `pedido`
 --
 ALTER TABLE `pedido`
-  MODIFY `id_pedido` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
+  MODIFY `id_pedido` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
 
 --
 -- AUTO_INCREMENT de tabela `sabor`
