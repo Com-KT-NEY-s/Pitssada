@@ -160,10 +160,10 @@ public class home extends javax.swing.JFrame {
             caixa.setLocationRelativeTo(null);
 
             dispose();
-        } else if (resposta == JOptionPane.NO_OPTION) {
+        } else if (resposta == JOptionPane.CANCEL_OPTION) {
+            this.requestFocus();
 
         }
-        // Se "Cancelar" é selecionado, não faz nada.
     }
 
     public void fecharCaixa() {

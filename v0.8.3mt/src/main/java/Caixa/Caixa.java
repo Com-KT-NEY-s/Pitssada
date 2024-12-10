@@ -25,6 +25,26 @@ public class Caixa extends javax.swing.JFrame {
             return false;
         }
     };
+    
+    /*
+        IDEIA PARA CAIXA ABERTO OU FECHADO
+    
+        ----------------------------------
+        
+        FAZER UMA FUNCAO/METODO QUE RETORNA O CONTRARIO CASO NAO/FALSE
+        OU NORMAL CASO SIM/TRUE
+        VEJA
+        
+        FUNCAO/METODO TAL(STRING ABC) {
+            ABC = SELECT O VARCHAR DO BANCO
+            OLA = SAIDA DO CAIXA
+            TAB = VALOR DA TABELA
+    
+            SE ABC = SIM E OLA = SIM { TAB = NAO
+            SE ABC = SIM E OLA = NAO { TAB = SIM
+            SE ABC = SIM E OLA = CANCELAR { TAB = PERMANECE O MESMO
+        }
+    */
 
     private static int id_caixa;
     private static int n_caixa;
