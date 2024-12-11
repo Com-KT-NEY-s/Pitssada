@@ -25,48 +25,36 @@ public class Caixa extends javax.swing.JFrame {
             return false;
         }
     };
-    
-    /*
-        IDEIA PARA CAIXA ABERTO OU FECHADO
-    
-        ----------------------------------
-        
-        FAZER UMA FUNCAO/METODO QUE RETORNA O CONTRARIO CASO NAO/FALSE
-        OU NORMAL CASO SIM/TRUE
-        VEJA
-        
-        FUNCAO/METODO TAL(STRING ABC) {
-            ABC = SELECT O VARCHAR DO BANCO
-            OLA = SAIDA DO CAIXA
-            TAB = VALOR DA TABELA
-    
-            SE ABC = SIM E OLA = SIM { TAB = NAO
-            SE ABC = SIM E OLA = NAO { TAB = SIM
-            SE ABC = SIM E OLA = CANCELAR { TAB = PERMANECE O MESMO
-        }
-    */
 
     private static int id_caixa;
     private static int n_caixa;
     private static String funcionario;
     private static boolean aberto;
     private static String fechouMesmo;
+    private static Caixa instance;
 
     public static int getIDCaixa() {
         return id_caixa;
     }
-    
+
     public static int getNCaixa() {
         return n_caixa;
     }
-    
+
     public static String getFuncionario() {
         return funcionario;
     }
-    
+
     public static boolean setAberto(boolean aberto) {
-        
+
         return aberto;
+    }
+
+    public static Caixa getInstance() {
+        if (instance == null) {
+            instance = new Caixa();
+        }
+        return instance;
     }
 
     public Caixa() {
@@ -91,7 +79,98 @@ public class Caixa extends javax.swing.JFrame {
         addEventListeners();
         configurarDelecaoPorTeclaDelete();
     }
+
+    /*
+        IDEIA PARA CAIXA ABERTO OU FECHADO
     
+        ----------------------------------
+        
+        FAZER UMA FUNCAO/METODO QUE RETORNA O CONTRARIO CASO NAO/FALSE
+        OU NORMAL CASO SIM/TRUE
+        VEJA
+        
+        FUNCAO/METODO TAL(STRING ABC) {
+            ABC = SELECT O VARCHAR DO BANCO
+            OLA = SAIDA DO CAIXA
+            TAB = VALOR DA TABELA
+    
+            SE ABC = SIM E OLA = SIM { TAB = NAO
+            SE ABC = SIM E OLA = NAO { TAB = SIM
+            SE ABC = SIM E OLA = CANCELAR { TAB = PERMANECE O MESMO
+        }
+     */
+
+    private void fecharCaixa() {
+        int selectedRow = JTcaixas.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Por favor, selecione um caixa para fechar.");
+            return;
+        }
+
+        int idCaixaSelecionado = (int) JTcaixas.getValueAt(selectedRow, 0); // Usando JTcaixas corretamente
+
+        Connection conn = Database.getConnection();
+
+        if (conn == null) {
+            JOptionPane.showMessageDialog(this, "Erro ao conectar ao banco de dados. Verifique a conexão.");
+            return;
+        }
+
+        PreparedStatement selectStmt = null;
+        PreparedStatement updateStmt = null;
+
+        try {
+            // Seleciona dados do caixa
+            String sqlSelect = "SELECT id_funcionario, nome_funcionario, abertura FROM caixa WHERE id_caixa = ?";
+            selectStmt = conn.prepareStatement(sqlSelect);
+            selectStmt.setInt(1, idCaixaSelecionado);
+            ResultSet rs = selectStmt.executeQuery();
+
+            if (rs.next()) {
+                int idFuncionario = rs.getInt("id_funcionario");
+                String nomeFunc = rs.getString("nome_funcionario");
+                Timestamp horaAbertura = rs.getTimestamp("abertura");
+                Timestamp horaFechamento = new Timestamp(System.currentTimeMillis());
+
+                // Atualizar o banco de dados para fechar o caixa
+                String sqlUpdate = "UPDATE caixa SET aberto = ?, fechamento = ? WHERE id_caixa = ?";
+                updateStmt = conn.prepareStatement(sqlUpdate);
+                updateStmt.setBoolean(1, false);
+                updateStmt.setTimestamp(2, horaFechamento);
+                updateStmt.setInt(3, idCaixaSelecionado);
+
+                int rowsUpdated = updateStmt.executeUpdate();
+                if (rowsUpdated > 0) {
+                    JTcaixas.setValueAt("Não", selectedRow, JTcaixas.getColumn("aberto").getModelIndex()); // Corrigido para atualizar a tabela corretamente
+                    JOptionPane.showMessageDialog(this, "Caixa fechado com sucesso.\nFuncionário: " + nomeFunc
+                            + "\nHora de abertura: " + horaAbertura + "\nHora de fechamento: " + horaFechamento);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Erro ao fechar o caixa.");
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Caixa não encontrado.");
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Erro ao executar a operação no banco de dados: " + e.getMessage());
+        } finally {
+            try {
+                if (selectStmt != null) {
+                    selectStmt.close();
+                }
+                if (updateStmt != null) {
+                    updateStmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     public void talvezFechar(boolean fechaste) {
         if (fechaste == true) {
             fechouMesmo = "Não";
@@ -116,57 +195,13 @@ public class Caixa extends javax.swing.JFrame {
         }
     }
 
-    public void listaCaixas() {
-        Connection conn = Database.getConnection();
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-
-        try {
-            String sql = "SELECT id_caixa, caixa, nome_funcionario, aberto FROM caixa";
-            stmt = conn.prepareStatement(sql);
-            rs = stmt.executeQuery();
-
-            // Limpa a tabela antes de adicionar novos dados
-            tabelaCaixas.setRowCount(0);
-
-            while (rs.next()) {
-                // = rs.getBoolean("aberto") ? "Sim" : "Não";
-
-                Object[] row = {
-                    rs.getInt("id_caixa"), // Adiciona o ID do caixa como primeira coluna
-                    rs.getInt("caixa"), // Número do caixa
-                    rs.getString("nome_funcionario"), // Nome do funcionário
-                    rs.getBoolean("aberto") ? "Sim" : "Não"
-                };
-                tabelaCaixas.addRow(row);
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (rs != null) {
-                    rs.close();
-                }
-                if (stmt != null) {
-                    stmt.close();
-                }
-                if (conn != null) {
-                    conn.close();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
     private void addEventListeners() {
         // Ouvinte para clique duplo na tabela
         JTcaixas.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 2) {
-                    abrirDetalhesCaixa();
+                    abrirHome();
                 }
             }
         });
@@ -176,13 +211,13 @@ public class Caixa extends javax.swing.JFrame {
             @Override
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    abrirDetalhesCaixa();
+                    abrirHome();
                 }
             }
         });
     }
 
-    private void abrirDetalhesCaixa() {
+    private void abrirHome() {
         int selectedRow = JTcaixas.getSelectedRow();
         if (selectedRow != -1) {
             id_caixa = (int) tabelaCaixas.getValueAt(selectedRow, 0);
@@ -193,6 +228,7 @@ public class Caixa extends javax.swing.JFrame {
             h.setLocationRelativeTo(null);
             dispose();
             setAberto(true);
+            atualizarEstadoCaixaTabela(true);
         }
     }
 
@@ -267,74 +303,47 @@ public class Caixa extends javax.swing.JFrame {
         addCaixaFrame.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     }
 
-    private void fecharCaixa() {
+    public void atualizarEstadoCaixaTabela(boolean aberto) {
         int selectedRow = JTcaixas.getSelectedRow();
-        if (selectedRow == -1) {
-            JOptionPane.showMessageDialog(this, "Por favor, selecione um caixa para fechar.");
-            return;
-        }
-
-        int idCaixaSelecionado = (int) JTcaixas.getValueAt(selectedRow, 0); // Usando JTcaixas corretamente
-
-        Connection conn = Database.getConnection();
-
-        if (conn == null) {
-            JOptionPane.showMessageDialog(this, "Erro ao conectar ao banco de dados. Verifique a conexão.");
-            return;
-        }
-
-        PreparedStatement selectStmt = null;
-        PreparedStatement updateStmt = null;
-
-        try {
-            // Seleciona dados do caixa
-            String sqlSelect = "SELECT id_funcionario, nome_funcionario, abertura FROM caixa WHERE id_caixa = ?";
-            selectStmt = conn.prepareStatement(sqlSelect);
-            selectStmt.setInt(1, idCaixaSelecionado);
-            ResultSet rs = selectStmt.executeQuery();
-
-            if (rs.next()) {
-                int idFuncionario = rs.getInt("id_funcionario");
-                String nomeFunc = rs.getString("nome_funcionario");
-                Timestamp horaAbertura = rs.getTimestamp("abertura");
-                Timestamp horaFechamento = new Timestamp(System.currentTimeMillis());
-
-                // Atualizar o banco de dados para fechar o caixa
-                String sqlUpdate = "UPDATE caixa SET aberto = ?, fechamento = ? WHERE id_caixa = ?";
-                updateStmt = conn.prepareStatement(sqlUpdate);
-                updateStmt.setBoolean(1, false);
-                updateStmt.setTimestamp(2, horaFechamento);
-                updateStmt.setInt(3, idCaixaSelecionado);
-
-                int rowsUpdated = updateStmt.executeUpdate();
-                if (rowsUpdated > 0) {
-                    JTcaixas.setValueAt("Não", selectedRow, JTcaixas.getColumn("aberto").getModelIndex()); // Corrigido para atualizar a tabela corretamente
-                    JOptionPane.showMessageDialog(this, "Caixa fechado com sucesso.\nFuncionário: " + nomeFunc
-                            + "\nHora de abertura: " + horaAbertura + "\nHora de fechamento: " + horaFechamento);
-                } else {
-                    JOptionPane.showMessageDialog(this, "Erro ao fechar o caixa.");
-                }
+        if (selectedRow != -1) {
+            int idCaixa = (int) tabelaCaixas.getValueAt(selectedRow, 0);
+            
+            String novoEstado;
+            
+            if (aberto) {
+                novoEstado = "Sim";
             } else {
-                JOptionPane.showMessageDialog(this, "Caixa não encontrado.");
+                novoEstado = "Não";
             }
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Erro ao executar a operação no banco de dados: " + e.getMessage());
-        } finally {
+            // Atualiza no banco de dados
+            Connection conn = Database.getConnection();
+            PreparedStatement stmt = null;
             try {
-                if (selectStmt != null) {
-                    selectStmt.close();
-                }
-                if (updateStmt != null) {
-                    updateStmt.close();
-                }
-                if (conn != null) {
-                    conn.close();
-                }
+                String sql = "UPDATE caixa SET aberto = ? WHERE id_caixa = ?";
+                stmt = conn.prepareStatement(sql);
+                stmt.setString(1, novoEstado);
+                stmt.setInt(2, idCaixa);
+                stmt.executeUpdate();
+
+                // Atualiza na tabela
+                tabelaCaixas.setValueAt(novoEstado, selectedRow, 3); // Coluna "Aberto"
             } catch (SQLException e) {
                 e.printStackTrace();
+            } finally {
+                try {
+                    if (stmt != null) {
+                        stmt.close();
+                    }
+                    if (conn != null) {
+                        conn.close();
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
             }
+        } else {
+            JOptionPane.showMessageDialog(this, "Selecione um caixa para atualizar o estado.");
         }
     }
 
@@ -347,6 +356,50 @@ public class Caixa extends javax.swing.JFrame {
                 }
             }
         });
+    }
+
+    public void listaCaixas() {
+        Connection conn = Database.getConnection();
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        try {
+            String sql = "SELECT id_caixa, caixa, nome_funcionario, aberto FROM caixa";
+            stmt = conn.prepareStatement(sql);
+            rs = stmt.executeQuery();
+
+            // Limpa a tabela antes de adicionar novos dados
+            tabelaCaixas.setRowCount(0);
+
+            while (rs.next()) {
+                // = rs.getBoolean("aberto") ? "Sim" : "Não";
+
+                Object[] row = {
+                    rs.getInt("id_caixa"), // Adiciona o ID do caixa como primeira coluna
+                    rs.getInt("caixa"), // Número do caixa
+                    rs.getString("nome_funcionario"), // Nome do funcionário
+                    rs.getString("aberto")
+                };
+                tabelaCaixas.addRow(row);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (stmt != null) {
+                    stmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private void excluirCaixa() {
