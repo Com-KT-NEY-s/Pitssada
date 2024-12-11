@@ -50,6 +50,7 @@ public class Caixa extends javax.swing.JFrame {
     private static int n_caixa;
     private static String funcionario;
     private static boolean aberto;
+    private static String fechouMesmo;
 
     public static int getIDCaixa() {
         return id_caixa;
@@ -89,6 +90,14 @@ public class Caixa extends javax.swing.JFrame {
         configurarAtalho();
         addEventListeners();
         configurarDelecaoPorTeclaDelete();
+    }
+    
+    public void talvezFechar(boolean fechaste) {
+        if (fechaste == true) {
+            fechouMesmo = "Não";
+        } else if (fechaste == false) {
+            fechouMesmo = "Sim";
+        }
     }
 
     public void verificaConexao(boolean isConnected) {

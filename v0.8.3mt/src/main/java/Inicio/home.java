@@ -30,6 +30,7 @@ public class home extends javax.swing.JFrame {
     private static File loadedFile = null; // verifies if a file was loaded || verifica se um arquivo foi carregado
     private static DefaultTableModel tableModel; // tabel model || model da tabela
     public int numeroCaixa;
+    public static String ficaAberto = "";
 
     public home() {
         super("Início");
@@ -150,6 +151,11 @@ public class home extends javax.swing.JFrame {
             JFrame caixa = new Caixa();
             caixa.setVisible(true);
             caixa.setLocationRelativeTo(null);
+            
+            Caixa c = new Caixa();
+            c.talvezFechar(true);
+            ficaAberto = "Não";
+            
 
             // Fecha apenas a janela `home`
             dispose();
@@ -158,11 +164,14 @@ public class home extends javax.swing.JFrame {
             JFrame caixa = new Caixa();
             caixa.setVisible(true);
             caixa.setLocationRelativeTo(null);
+            
+            Caixa c = new Caixa();
+            c.talvezFechar(false);
+            ficaAberto =  "Sim";
 
             dispose();
         } else if (resposta == JOptionPane.CANCEL_OPTION) {
-            this.requestFocus();
-
+            // ?????????????????????
         }
     }
 
@@ -173,7 +182,7 @@ public class home extends javax.swing.JFrame {
         try {
             String sqlUpdate = "UPDATE caixa SET aberto = ?, fechamento = ? WHERE id_caixa = ?";
             updateStmt = conn.prepareStatement(sqlUpdate);
-            updateStmt.setBoolean(1, false);
+            updateStmt.setString(1, ficaAberto);
             updateStmt.setTimestamp(2, new Timestamp(System.currentTimeMillis()));
             updateStmt.setInt(3, Caixa.getIDCaixa());
 

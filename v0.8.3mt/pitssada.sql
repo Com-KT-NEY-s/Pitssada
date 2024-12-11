@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 13/11/2024 às 01:07
+-- Tempo de geração: 11/12/2024 às 01:06
 -- Versão do servidor: 10.4.32-MariaDB
--- Versão do PHP: 8.0.30
+-- Versão do PHP: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -47,8 +47,15 @@ CREATE TABLE `caixa` (
   `nome_funcionario` varchar(255) DEFAULT NULL,
   `abertura` timestamp NOT NULL DEFAULT current_timestamp(),
   `fechamento` timestamp NULL DEFAULT NULL,
-  `aberto` tinyint(1) NOT NULL
+  `aberto` varchar(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Despejando dados para a tabela `caixa`
+--
+
+INSERT INTO `caixa` (`id_caixa`, `id_funcionario`, `caixa`, `nome_funcionario`, `abertura`, `fechamento`, `aberto`) VALUES
+(6, 3, 1, 'Guilherme', '2024-12-10 23:37:57', '2024-12-10 23:49:19', '0');
 
 -- --------------------------------------------------------
 
@@ -62,6 +69,13 @@ CREATE TABLE `funcionarios` (
   `cpf` varchar(255) DEFAULT NULL,
   `idade` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Despejando dados para a tabela `funcionarios`
+--
+
+INSERT INTO `funcionarios` (`id_funcionario`, `nome_funcionario`, `cpf`, `idade`) VALUES
+(3, 'Guilherme', '000.000.000-10', 20);
 
 -- --------------------------------------------------------
 
@@ -163,13 +177,13 @@ ALTER TABLE `bebida`
 -- AUTO_INCREMENT de tabela `caixa`
 --
 ALTER TABLE `caixa`
-  MODIFY `id_caixa` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id_caixa` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT de tabela `funcionarios`
 --
 ALTER TABLE `funcionarios`
-  MODIFY `id_funcionario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id_funcionario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de tabela `pedido`
