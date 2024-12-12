@@ -31,7 +31,7 @@ public class home extends javax.swing.JFrame {
     private static DefaultTableModel tableModel; // tabel model || model da tabela
     public int numeroCaixa;
     public static String ficaAberto = "";
-    
+
     public home() {
         super("Início");
         initComponents();
@@ -146,24 +146,24 @@ public class home extends javax.swing.JFrame {
         );
 
         Caixa c = new Caixa();
-        
         Caixa caixa = Caixa.getInstance(); // Garantir uma única instância do Caixa
+        int idCaixaAtual = caixa.getIdCaixaAtual(); // Obtém o ID do caixa em uso (assumindo que há um método para isso)
+
         switch (resposta) {
             case JOptionPane.YES_OPTION:
-                caixa.atualizarEstadoCaixaTabela(false); // Marca "Aberto" como "Não"
-                
+                caixa.atualizarEstadoCaixaTabela(false, idCaixaAtual); // Marca "Aberto" como "Não"
                 c.setVisible(true);
                 
                 dispose(); // Fecha a janela `home`
                 break;
             case JOptionPane.NO_OPTION:
-                caixa.atualizarEstadoCaixaTabela(true); // Mantém "Aberto" como "Sim"
-                
+                caixa.atualizarEstadoCaixaTabela(true, idCaixaAtual); // Marca "Aberto" como "Sim"
                 c.setVisible(true);
                 
                 dispose(); // Fecha a janela `home`
                 break;
             case JOptionPane.CANCEL_OPTION:
+                // Não faz nada
                 break;
         }
     }
@@ -182,8 +182,7 @@ public class home extends javax.swing.JFrame {
             int rowsUpdated = updateStmt.executeUpdate();
             if (rowsUpdated > 0) {
                 JOptionPane.showMessageDialog(this, "Caixa fechado com sucesso.");
-                
-                
+
             } else {
                 JOptionPane.showMessageDialog(this, "Erro ao fechar o caixa.");
             }

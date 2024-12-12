@@ -32,6 +32,7 @@ public class Caixa extends javax.swing.JFrame {
     private static boolean aberto;
     private static String fechouMesmo;
     private static Caixa instance;
+    private static int idCaixaAtual;
 
     public static int getIDCaixa() {
         return id_caixa;
@@ -99,7 +100,6 @@ public class Caixa extends javax.swing.JFrame {
             SE ABC = SIM E OLA = CANCELAR { TAB = PERMANECE O MESMO
         }
      */
-
     private void fecharCaixa() {
         int selectedRow = JTcaixas.getSelectedRow();
         if (selectedRow == -1) {
@@ -228,7 +228,7 @@ public class Caixa extends javax.swing.JFrame {
             h.setLocationRelativeTo(null);
             dispose();
             setAberto(true);
-            atualizarEstadoCaixaTabela(true);
+            atualizarEstadoCaixaTabela(true, id_caixa);
         }
     }
 
@@ -303,48 +303,40 @@ public class Caixa extends javax.swing.JFrame {
         addCaixaFrame.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     }
 
-    public void atualizarEstadoCaixaTabela(boolean aberto) {
-        int selectedRow = JTcaixas.getSelectedRow();
-        if (selectedRow != -1) {
-            int idCaixa = (int) tabelaCaixas.getValueAt(selectedRow, 0);
-            
-            String novoEstado;
-            
-            if (aberto) {
-                novoEstado = "Sim";
-            } else {
-                novoEstado = "Não";
-            }
+    public void atualizarEstadoCaixaTabela(boolean aberto, int idCaixa) {
+        String novoEstado = aberto ? "Sim" : "Não";
 
-            // Atualiza no banco de dados
-            Connection conn = Database.getConnection();
-            PreparedStatement stmt = null;
+        // Atualiza no banco de dados
+        Connection conn = Database.getConnection();
+        PreparedStatement stmt = null;
+        try {
+            String sql = "UPDATE caixa SET aberto = ? WHERE id_caixa = ?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, novoEstado);
+            stmt.setInt(2, idCaixa);
+            stmt.executeUpdate();
+
+            // Opcional: Atualizar a tabela local, caso necessário
+            // Atualizar a tabela JTable se ela for visível em outra janela
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
             try {
-                String sql = "UPDATE caixa SET aberto = ? WHERE id_caixa = ?";
-                stmt = conn.prepareStatement(sql);
-                stmt.setString(1, novoEstado);
-                stmt.setInt(2, idCaixa);
-                stmt.executeUpdate();
-
-                // Atualiza na tabela
-                tabelaCaixas.setValueAt(novoEstado, selectedRow, 3); // Coluna "Aberto"
+                if (stmt != null) {
+                    stmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
             } catch (SQLException e) {
                 e.printStackTrace();
-            } finally {
-                try {
-                    if (stmt != null) {
-                        stmt.close();
-                    }
-                    if (conn != null) {
-                        conn.close();
-                    }
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
             }
-        } else {
-            JOptionPane.showMessageDialog(this, "Selecione um caixa para atualizar o estado.");
         }
+    }
+
+    public int getIdCaixaAtual() {
+        // Retorna o ID do caixa atual (exemplo)
+        return idCaixaAtual; // Supondo que existe uma variável idCaixaAtual
     }
 
     private void configurarDelecaoPorTeclaDelete() {
