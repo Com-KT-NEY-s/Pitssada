@@ -304,7 +304,7 @@ public class Caixa extends javax.swing.JFrame {
     }
 
     public void atualizarEstadoCaixaTabela(boolean aberto, int idCaixa) {
-        String novoEstado = aberto ? "Sim" : "Não";
+        String novoEstado = "";
 
         // Atualiza no banco de dados
         Connection conn = Database.getConnection();
