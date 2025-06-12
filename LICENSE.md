@@ -17,8 +17,6 @@ Este software é fornecido "como está" para uso pessoal e não comercial, com o
 
 ### 3. Restrições de Uso Comercial
    - **Proibição de Uso Comercial**: Não é permitido o uso deste software para fins comerciais sem o consentimento prévio do autor.
-   - **Autorização Comercial**: Caso deseje utilizar este software para fins comerciais, você deve contatar o autor para obter permissão.
-   - **Contato**: Para entrar em contato, envie um e-mail para `guilhermemathiack@gmail.com`
 
 ### 4. Limitação de Responsabilidade
    - Este software é fornecido "como está", sem garantias de qualquer tipo. O autor não se responsabiliza por qualquer dano ou perda decorrente do uso do software.
